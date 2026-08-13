@@ -1,40 +1,27 @@
-<!doctype html>
-<html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AjeMarket</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AjeMarket</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7fa;color:#142033}
-header{background:#06233b;color:white;padding:16px;position:sticky;top:0;z-index:5}
-nav{max-width:1050px;margin:auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.logo{font-size:25px;font-weight:800}.logo b{color:#43d5bd}.search{flex:1;min-width:180px;padding:12px;border:0;border-radius:9px}
-button{border:0;border-radius:9px;padding:11px 15px;font-weight:700;cursor:pointer}
-.cart{background:white;color:#06233b}.hero{max-width:1050px;margin:22px auto;padding:30px 20px;border-radius:18px;background:linear-gradient(135deg,#06233b,#087c72);color:white}
-.hero h1{margin:0 0 10px;font-size:32px}.wrap{max-width:1050px;margin:auto;padding:0 20px 40px}
-.filters{display:flex;gap:8px;overflow:auto;margin:18px 0}.filters button{background:white;border:1px solid #ddd;white-space:nowrap}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
-.card{background:white;border-radius:15px;overflow:hidden;box-shadow:0 3px 14px #0001}.pic{height:140px;background:#e9eff4;display:grid;place-items:center;font-size:55px}
-.card div:last-child{padding:14px}.price{font-size:19px;font-weight:800;margin:9px 0}.add{width:100%;background:#06233b;color:white}
-.drawer{position:fixed;right:-410px;top:0;width:min(400px,92vw);height:100%;background:white;z-index:10;padding:20px;box-shadow:-5px 0 25px #0003;transition:.25s;overflow:auto}.drawer.open{right:0}
-.item{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid #eee}.emoji{font-size:30px}.grow{flex:1}.total{font-size:21px;font-weight:800;margin:20px 0}.checkout{width:100%;background:#07876f;color:white}.muted{color:#687386;font-size:13px}.empty{text-align:center;padding:35px;color:#687386}
+*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f7fa;color:#10243a}header{background:#06263d;color:#fff;padding:14px;position:sticky;top:0;z-index:5}.nav{max-width:1100px;margin:auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}.logo{font-size:28px;font-weight:900}.logo b{color:#55d6c8}.search{flex:1;min-width:180px;padding:14px;border:0;border-radius:12px;font-size:16px}.btn{border:0;border-radius:11px;padding:12px 17px;font-weight:bold;cursor:pointer}.cart{background:#fff;color:#06263d}.primary{background:#06263d;color:#fff}.hero,main{max-width:1100px;margin:auto;padding:18px}.heroBox{padding:38px 25px;border-radius:25px;background:linear-gradient(120deg,#075b69,#079c91);color:#fff}.hero h1{font-size:clamp(38px,8vw,62px);margin:0 0 12px}.hero p{font-size:18px;line-height:1.5}.hero .btn{background:#fff;color:#06263d}.cats{display:flex;gap:9px;overflow:auto;padding:10px 0 20px}.cat{white-space:nowrap;background:#fff;border:1px solid #d5dee7;border-radius:11px;padding:12px 17px;font-weight:bold}.cat.on{background:#06263d;color:#fff}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}.card{background:#fff;border-radius:17px;overflow:hidden;box-shadow:0 3px 15px #0001}.pic{height:175px;background:#eaf0f5;display:flex;align-items:center;justify-content:center;font-size:65px}.body{padding:15px}.muted{color:#64748b;font-size:14px}.name{font-size:20px;font-weight:bold;margin:7px 0}.price{font-size:21px;font-weight:900;margin:10px 0 14px}.full{width:100%}.overlay{display:none;position:fixed;inset:0;background:#0008;z-index:20;align-items:flex-end;justify-content:center;padding:12px}.overlay.show{display:flex}.modal{background:#fff;width:min(650px,100%);max-height:90vh;overflow:auto;border-radius:20px;padding:20px}.close{float:right;border:0;border-radius:50%;width:34px;height:34px}.item{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #eee}.grow{flex:1}.qty button{width:30px;height:30px}.total{font-size:22px;font-weight:900;margin:17px 0}.form input,.form textarea,.form select{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #ccd6df;border-radius:9px}.note{background:#fff7d6;padding:12px;border-radius:9px;font-size:14px}footer{background:#06263d;color:#fff;text-align:center;padding:28px;margin-top:30px}
 </style></head><body>
-<header><nav><div class="logo">Aje<b>Market</b></div><input id="search" class="search" placeholder="Search products"><button class="cart" onclick="openCart()">Cart (<span id="count">0</span>)</button></nav></header>
-<section class="hero"><div class="wrap" style="padding:0"><h1>Welcome to AjeMarket</h1><p>Shop products from your phone with this marketplace prototype.</p><button onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Start shopping</button></div></section>
-<main class="wrap"><div class="filters">
-<button onclick="cat='All';render()">All</button><button onclick="cat='Electronics';render()">Electronics</button><button onclick="cat='Home';render()">Home</button><button onclick="cat='Fashion';render()">Fashion</button>
-</div><div id="products" class="grid"></div></main>
-<aside id="drawer" class="drawer"><button onclick="closeCart()">Close</button><h2>Your Cart</h2><div id="items"></div><div id="total" class="total">Total: ₦0</div><button class="checkout" onclick="checkout()">Proceed to checkout</button></aside>
+<header><div class="nav"><div class="logo">Aje<b>Market</b></div><input id="search" class="search" placeholder="Search products..."><button class="btn cart" onclick="openCart()">Cart (<span id="count">0</span>)</button></div></header>
+<section class="hero"><div class="heroBox"><h1>Shop smarter.<br>Shop AjeMarket.</h1><p>Discover everyday products in Nigeria. Add items to your cart and place an order from your phone.</p><button class="btn" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Start shopping</button></div></section>
+<main><div id="cats" class="cats"></div><div id="products" class="grid"></div></main>
+<footer><b>AjeMarket</b><br><br>Nigerian online marketplace prototype</footer>
+
+<div id="cartBox" class="overlay"><div class="modal"><button class="close" onclick="closeBox('cartBox')">×</button><h2>Your Cart</h2><div id="items"></div><div class="total">Total: <span id="total">₦0</span></div><button class="btn primary full" onclick="checkout()">Proceed to checkout</button></div></div>
+<div id="checkBox" class="overlay"><div class="modal"><button class="close" onclick="closeBox('checkBox')">×</button><h2>Checkout</h2><div class="note">Real payment verification will be connected through a secure backend in the next stage. Do not enter card details here.</div><br><form class="form" onsubmit="place(event)"><label>Full name</label><input id="name" required><label>Phone</label><input id="phone" type="tel" required><label>Delivery address</label><textarea id="address" rows="3" required></textarea><label>State</label><select id="state" required><option value="">Select state</option><option>Lagos</option><option>Ogun</option><option>Oyo</option><option>Abuja (FCT)</option><option>Rivers</option><option>Other</option></select><button class="btn primary full">Place order</button></form></div></div>
+<div id="doneBox" class="overlay"><div class="modal" style="text-align:center"><h2>Order received!</h2><p id="done"></p><button class="btn primary" onclick="closeBox('doneBox')">Done</button></div></div>
 <script>
-const P=[
-[1,'Smartphone',285000,'Electronics','📱'],[2,'Headphones',45000,'Electronics','🎧'],[3,'Power Bank',28000,'Electronics','🔋'],
-[4,'Office Chair',95000,'Home','🪑'],[5,'Table Lamp',18000,'Home','💡'],[6,'Sneakers',65000,'Fashion','👟'],[7,'Backpack',32000,'Fashion','🎒']];
-let cart=JSON.parse(localStorage.cart||'[]'),cat='All';
-const money=n=>'₦'+n.toLocaleString('en-NG');
-function render(){let q=search.value.toLowerCase();products.innerHTML=P.filter(x=>(cat==='All'||x[3]===cat)&&x[1].toLowerCase().includes(q)).map(x=>`<article class="card"><div class="pic">${x[4]}</div><div><div class="muted">${x[3]}</div><h3>${x[1]}</h3><div class="price">${money(x[2])}</div><button class="add" onclick="add(${x[0]})">Add to cart</button></div></article>`).join('')||'<div class="empty">No products found.</div>';cartView()}
-function add(id){let x=cart.find(a=>a.id===id);x?x.q++:cart.push({id,q:1});save()}
-function save(){localStorage.cart=JSON.stringify(cart);cartView()}
-function cartView(){count.textContent=cart.reduce((a,x)=>a+x.q,0);items.innerHTML=cart.length?cart.map(i=>{let p=P.find(x=>x[0]===i.id);return `<div class="item"><div class="emoji">${p[4]}</div><div class="grow"><b>${p[1]}</b><br>${money(p[2])}<br><button onclick="chg(${p[0]},-1)">−</button> ${i.q} <button onclick="chg(${p[0]},1)">+</button></div></div>`}).join(''):'<div class="empty">Your cart is empty.</div>';let t=cart.reduce((a,i)=>a+P.find(x=>x[0]===i.id)[2]*i.q,0);total.textContent='Total: '+money(t)}
-function chg(id,n){let x=cart.find(a=>a.id===id);x.q+=n;if(x.q<1)cart=cart.filter(a=>a.id!==id);save()}
-function openCart(){drawer.classList.add('open')}function closeCart(){drawer.classList.remove('open')}
-function checkout(){alert(cart.length?'Checkout demo. Real payment integration can be connected next.':'Your cart is empty.')}
-search.oninput=render;render();
+const P=[['Smartphone','Electronics',285000,'📱'],['Wireless Earbuds','Electronics',35000,'🎧'],['Smart Watch','Electronics',55000,'⌚'],['Power Bank','Electronics',28000,'🔋'],['Office Chair','Home',95000,'🪑'],['Table Lamp','Home',22000,'💡'],['Backpack','Fashion',30000,'🎒'],['Sneakers','Fashion',65000,'👟']];
+let cat='All',cart=JSON.parse(localStorage.ajeCart||'[]');const money=n=>'₦'+n.toLocaleString('en-NG');
+function save(){localStorage.ajeCart=JSON.stringify(cart);count.textContent=cart.reduce((a,x)=>a+x.q,0)}
+function cats(){let a=['All',...new Set(P.map(x=>x[1]))];document.getElementById('cats').innerHTML=a.map(x=>`<button class="cat ${x==cat?'on':''}" onclick="cat='${x}';cats();render()">${x}</button>`).join('')}
+function render(){let q=search.value.toLowerCase();let a=P.filter(x=>(cat=='All'||x[1]==cat)&&x[0].toLowerCase().includes(q));products.innerHTML=a.map((x,i)=>`<article class="card"><div class="pic">${x[3]}</div><div class="body"><div class="muted">${x[1]}</div><div class="name">${x[0]}</div><div class="price">${money(x[2])}</div><button class="btn primary full" onclick="add(${P.indexOf(x)})">Add to cart</button></div></article>`).join('')||'<p>No products found.</p>'}
+function add(i){let x=cart.find(y=>y.i==i);x?x.q++:cart.push({i,q:1});save();openCart()}
+function openCart(){renderCart();cartBox.classList.add('show')}
+function renderCart(){let t=0;items.innerHTML=cart.length?cart.map(x=>{let p=P[x.i],s=p[2]*x.q;t+=s;return `<div class="item"><span style="font-size:35px">${p[3]}</span><div class="grow"><b>${p[0]}</b><br>${money(p[2])}</div><div class="qty"><button onclick="chg(${x.i},-1)">−</button> ${x.q} <button onclick="chg(${x.i},1)">+</button></div></div>`}).join(''):'<p>Your cart is empty.</p>';total.textContent=money(t)}
+function chg(i,d){let x=cart.find(y=>y.i==i);x.q+=d;if(x.q<1)cart=cart.filter(y=>y.i!=i);save();renderCart()}
+function checkout(){if(!cart.length)return alert('Your cart is empty.');closeBox('cartBox');checkBox.classList.add('show')}
+function closeBox(id){document.getElementById(id).classList.remove('show')}
+function place(e){e.preventDefault();let no='AJM-'+Date.now().toString().slice(-8);done.textContent=`Order ${no} has been created for ${name.value}. Keep this number for your records.`;cart=[];save();e.target.reset();closeBox('checkBox');doneBox.classList.add('show')}
+search.addEventListener('input',render);cats();render();save();
 </script></body></html>
