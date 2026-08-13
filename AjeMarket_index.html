@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#06243b"><title>AjeMarket</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fa;color:#102033}
+header{background:#06243b;color:white;padding:15px;position:sticky;top:0;z-index:5}.nav{max-width:1100px;margin:auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.logo{font-size:26px;font-weight:800}.logo b{color:#22d3b2}.search{flex:1;min-width:180px;background:white;border-radius:10px;display:flex}.search input{width:100%;padding:12px;border:0;outline:0;border-radius:10px}.search button{border:0;background:white}.cart,.hero button{padding:12px 17px;border:0;border-radius:10px;font-weight:bold}
+.hero{max-width:1100px;margin:20px auto;padding:35px 25px;border-radius:22px;color:white;background:linear-gradient(120deg,#06324d,#087f7a)}.hero h1{font-size:40px;margin:0 0 10px}.hero p{font-size:18px;line-height:1.5}
+.wrap{max-width:1100px;margin:auto;padding:0 15px 40px}.cats{display:flex;gap:9px;overflow:auto;padding-bottom:18px}.cat{background:white;border:1px solid #d8e0e8;padding:11px 17px;border-radius:11px;font-weight:bold;white-space:nowrap}.cat.active{background:#06243b;color:white}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{background:white;border-radius:15px;overflow:hidden;box-shadow:0 2px 10px #0001}.pic{height:175px;background:#edf2f7;display:flex;align-items:center;justify-content:center;font-size:60px}.info{padding:14px}.tag{color:#087f7a;font-size:13px;font-weight:bold}.name{font-size:18px;font-weight:bold;margin:7px 0}.price{font-size:20px;font-weight:bold;margin:10px 0}.add,.pay{width:100%;padding:12px;border:0;border-radius:9px;background:#06243b;color:white;font-weight:bold}
+.overlay,.modal{position:fixed;inset:0;background:#0008;z-index:20;display:none}.overlay.show,.modal.show{display:block}.drawer{background:white;position:absolute;right:0;top:0;width:min(430px,94%);height:100%;padding:22px;overflow:auto}.close{float:right;border:0;border-radius:50%;width:36px;height:36px;font-size:22px}.item{display:flex;gap:10px;padding:13px 0;border-bottom:1px solid #ddd}.icon{width:55px;height:55px;background:#edf2f7;display:flex;align-items:center;justify-content:center;border-radius:9px;font-size:28px}.main{flex:1}.qty button{border:0;margin:5px;padding:5px 9px}.remove{border:0;background:none;color:#d33;font-size:12px}.total{display:flex;justify-content:space-between;font-size:20px;font-weight:bold;padding:18px 0}
+.modal{display:none;align-items:center;justify-content:center;padding:18px}.modal.show{display:flex}.box{background:white;border-radius:17px;padding:22px;width:min(500px,100%)}.box input,.box textarea,.box select{width:100%;padding:11px;margin:6px 0 12px;border:1px solid #ccd5df;border-radius:8px}.notice{background:#e7faf5;padding:11px;border-radius:9px;font-size:13px;margin-bottom:12px}.empty{text-align:center;color:#687586;padding:30px}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.hero{margin:12px 8px}.hero h1{font-size:32px}.grid{gap:10px}.pic{height:135px}.name{font-size:16px}.price{font-size:18px}}
+</style></head>
+<body>
+<header><div class="nav"><div class="logo">Aje<b>Market</b></div>
+<div class="search"><input id="search" placeholder="Search products..." oninput="render()"><button>🔍</button></div>
+<button class="cart" onclick="openCart()">Cart (<span id="count">0</span>)</button></div></header>
+<section class="hero"><div class="wrap"><h1>Shop smarter with AjeMarket</h1><p>Discover everyday products, add them to your cart and place an order from your phone.</p><button onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Start shopping</button></div></section>
+<div class="wrap"><div class="cats" id="cats"></div><h2>Featured products</h2><div class="grid" id="products"></div></div>
+
+<div class="overlay" id="overlay" onclick="if(event.target.id==='overlay')closeCart()"><div class="drawer">
+<button class="close" onclick="closeCart()">×</button><h2>Your Cart</h2><div id="cart"></div><div class="total"><span>Total</span><span id="total">₦0</span></div><button class="pay" onclick="checkout()">Proceed to checkout</button></div></div>
+
+<div class="modal" id="modal"><div class="box"><button class="close" onclick="closeCheckout()">×</button><h2>Checkout</h2>
+<div class="notice">Prototype mode: no real payment is charged.</div>
+<label>Name</label><input id="name" placeholder="Your name"><label>Phone</label><input id="phone" placeholder="080...">
+<label>Delivery address</label><textarea id="address" rows="3" placeholder="Your address"></textarea>
+<label>Payment</label><select id="payment"><option>Pay on delivery</option><option>Bank transfer</option><option>Card payment (prototype)</option></select>
+<button class="pay" onclick="placeOrder()">Place order</button></div></div>
+
+<script>
+const P=[
+[1,"Smartphone","Electronics",285000,"📱"],[2,"Wireless Earbuds","Electronics",45000,"🎧"],[3,"Smart Watch","Electronics",65000,"⌚"],[4,"Bluetooth Speaker","Electronics",38000,"🔊"],
+[5,"Standing Fan","Home",72000,"🌀"],[6,"Air Fryer","Home",85000,"🍳"],[7,"Travel Backpack","Fashion",32000,"🎒"],[8,"Sneakers","Fashion",55000,"👟"]];
+let cat="All",cart=JSON.parse(localStorage.ajeCart||"[]");
+const money=n=>"₦"+n.toLocaleString("en-NG");
+function renderCats(){let a=["All",...new Set(P.map(x=>x[2]))];cats.innerHTML=a.map(x=>`<button class="cat ${x==cat?"active":""}" onclick="cat='${x}';renderCats();render()">${x}</button>`).join("")}
+function render(){let q=search.value.toLowerCase();let a=P.filter(x=>(cat=="All"||x[2]==cat)&&(!q||x[1].toLowerCase().includes(q)||x[2].toLowerCase().includes(q)));products.innerHTML=a.map(x=>`<article class="card"><div class="pic">${x[4]}</div><div class="info"><div class="tag">${x[2]}</div><div class="name">${x[1]}</div><div class="price">${money(x[3])}</div><button class="add" onclick="add(${x[0]})">Add to cart</button></div></article>`).join("")||'<div class="empty" style="grid-column:1/-1">No products found.</div>'}
+function save(){localStorage.ajeCart=JSON.stringify(cart);count.textContent=cart.reduce((s,x)=>s+x.q,0)}
+function add(id){let x=cart.find(x=>x.id==id);x?x.q++:cart.push({id,q:1});save();openCart()}
+function openCart(){drawCart();overlay.classList.add("show")}function closeCart(){overlay.classList.remove("show")}
+function drawCart(){if(!cart.length){cartEl.innerHTML='<div class="empty">Your cart is empty.</div>';total.textContent="₦0";return}let t=0;cartEl.innerHTML=cart.map(i=>{let p=P.find(x=>x[0]==i.id);t+=p[3]*i.q;return `<div class="item"><div class="icon">${p[4]}</div><div class="main"><b>${p[1]}</b><div>${money(p[3])}</div><div class="qty"><button onclick="change(${p[0]},-1)">−</button>${i.q}<button onclick="change(${p[0]},1)">+</button></div><button class="remove" onclick="removeItem(${p[0]})">Remove</button></div></div>`}).join("");total.textContent=money(t)}
+const cartEl=document.getElementById("cart");
+function change(id,d){let x=cart.find(x=>x.id==id);x.q+=d;if(x.q<1)cart=cart.filter(x=>x.id!=id);save();drawCart()}function removeItem(id){cart=cart.filter(x=>x.id!=id);save();drawCart()}
+function checkout(){if(!cart.length)return alert("Your cart is empty.");modal.classList.add("show")}function closeCheckout(){modal.classList.remove("show")}
+function placeOrder(){if(!name.value.trim()||!phone.value.trim()||!address.value.trim())return alert("Please fill in your name, phone and address.");let no="AJM-"+Date.now().toString().slice(-6);localStorage.ajeLastOrder=JSON.stringify({no,name:name.value,phone:phone.value,address:address.value,payment:payment.value,items:cart});cart=[];save();closeCheckout();closeCart();alert("Order placed successfully!\nOrder number: "+no+"\nPrototype mode: no payment was charged.")}
+renderCats();render();save();
+</script></body></html>
