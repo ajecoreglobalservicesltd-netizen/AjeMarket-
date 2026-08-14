@@ -107,4 +107,4 @@ function preview(){let b=document.getElementById("pics");b.innerHTML="";[...docu
 function continueListing(e){e.preventDefault();let s=document.getElementById("listingStatus");if(!localStorage.getItem("aje_access_token")){s.className="status err";s.textContent="Please create a seller account or log in first.";showAuth();return}s.className="status ok";s.textContent=kind==="product"?"FREE listing ready. Next we connect saving to the AjeMarket database.":"Payment required before this listing can be published. Next we connect the payment step."}
 </script>
 </body>
-</html>
+</html> 
