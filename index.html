@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AjeMarket - Marketplace</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f6f8;
+  color:#111827;
+}
+header{
+  background:#0b1320;
+  color:white;
+  padding:16px;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+.top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  max-width:1100px;
+  margin:auto;
+}
+.logo{
+  font-size:26px;
+  font-weight:800;
+  color:#19c37d;
+}
+.icons{
+  display:flex;
+  gap:10px;
+}
+.icon-btn{
+  background:#182333;
+  color:white;
+  border:0;
+  padding:10px 13px;
+  border-radius:10px;
+  font-size:16px;
+}
+.search{
+  max-width:1100px;
+  margin:14px auto 0;
+  display:flex;
+}
+.search input{
+  flex:1;
+  padding:14px;
+  border:0;
+  border-radius:10px 0 0 10px;
+  font-size:15px;
+}
+.search button{
+  border:0;
+  background:#19c37d;
+  padding:0 18px;
+  border-radius:0 10px 10px 0;
+  font-weight:bold;
+}
+.hero{
+  background:linear-gradient(135deg,#07111f,#123c35);
+  color:white;
+  padding:40px 18px;
+}
+.hero-inner{
+  max-width:1100px;
+  margin:auto;
+}
+.hero h1{
+  font-size:34px;
+  margin-bottom:10px;
+}
+.hero p{
+  color:#d1d5db;
+  margin-bottom:22px;
+}
+.shop-btn{
+  background:#19c37d;
+  color:#062318;
+  border:0;
+  padding:13px 20px;
+  border-radius:10px;
+  font-weight:bold;
+}
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:25px 16px;
+}
+.section-title{
+  font-size:22px;
+  margin-bottom:15px;
+}
+.categories{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding-bottom:10px;
+}
+.category{
+  min-width:max-content;
+  padding:11px 16px;
+  background:white;
+  border:1px solid #ddd;
+  border-radius:20px;
+}
+.category.active{
+  background:#0b1320;
+  color:white;
+}
+.products{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+}
+.card{
+  background:white;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+.product-img{
+  width:100%;
+  height:160px;
+  object-fit:cover;
+  background:#e5e7eb;
+}
+.card-body{
+  padding:13px;
+}
+.product-name{
+  font-weight:bold;
+  margin-bottom:7px;
+}
+.category-name{
+  color:#6b7280;
+  font-size:13px;
+  margin-bottom:8px;
+}
+.price{
+  font-size:18px;
+  font-weight:800;
+  margin-bottom:10px;
+}
+.add{
+  width:100%;
+  background:#0b1320;
+  color:white;
+  border:0;
+  padding:11px;
+  border-radius:8px;
+  font-weight:bold;
+}
+.cart-panel{
+  position:fixed;
+  right:15px;
+  bottom:15px;
+  background:#19c37d;
+  color:#062318;
+  padding:14px 18px;
+  border-radius:30px;
+  font-weight:bold;
+  box-shadow:0 5px 20px rgba(0,0,0,.2);
+}
+footer{
+  background:#0b1320;
+  color:#aaa;
+  text-align:center;
+  padding:30px 15px;
+  margin-top:30px;
+}
+@media(min-width:700px){
+  .products{
+    grid-template-columns:repeat(4,1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="top">
+    <div class="logo">AjeMarket</div>
+
+    <div class="icons">
+      <button class="icon-btn" onclick="openAccount()">Account</button>
+      <button class="icon-btn" onclick="showCart()">Cart 🛒</button>
+    </div>
+  </div>
+
+  <div class="search">
+    <input id="searchInput" type="text" placeholder="Search products...">
+    <button onclick="searchProducts()">Search</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <h1>Shop everything you need.</h1>
+    <p>Discover products from trusted sellers on AjeMarket.</p>
+    <button class="shop-btn" onclick="scrollToProducts()">Shop Now</button>
+  </div>
+</section>
+
+<main class="container">
+
+  <h2 class="section-title">Categories</h2>
+
+  <div class="categories">
+    <button class="category active" onclick="filterCategory('All',this)">All</button>
+    <button class="category" onclick="filterCategory('Electronics',this)">Electronics</button>
+    <button class="category" onclick="filterCategory('Home',this)">Home</button>
+    <button class="category" onclick="filterCategory('Fashion',this)">Fashion</button>
+    <button class="category" onclick="filterCategory('Phones',this)">Phones</button>
+  </div>
+
+  <br>
+
+  <h2 class="section-title" id="productsTitle">Featured Products</h2>
+
+  <div class="products" id="products"></div>
+
+</main>
+
+<div class="cart-panel" onclick="showCart()">
+  🛒 Cart: <span id="cartCount">0</span>
+</div>
+
+<footer>
+  <h2>AjeMarket</h2>
+  <p>Buy. Sell. Discover.</p>
+  <br>
+  <p>© 2026 AjeMarket. All rights reserved.</p>
+</footer>
+
+<script>
+
+const products = [
+{
+ id:1,
+ name:"Smartphone",
+ category:"Electronics",
+ price:285000,
+ image:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800"
+},
+{
+ id:2,
+ name:"Wireless Earbuds",
+ category:"Electronics",
+ price:45000,
+ image:"https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=800"
+},
+{
+ id:3,
+ name:"Smart Watch",
+ category:"Electronics",
+ price:65000,
+ image:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800"
+},
+{
+ id:4,
+ name:"Standing Fan",
+ category:"Home",
+ price:72000,
+ image:"https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=800"
+},
+{
+ id:5,
+ name:"Air Fryer",
+ category:"Home",
+ price:85000,
+ image:"https://images.unsplash.com/photo-1585515656815-4c8b7f5c7b5b?w=800"
+},
+{
+ id:6,
+ name:"Travel Backpack",
+ category:"Fashion",
+ price:32000,
+ image:"https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800"
+}
+];
+
+let cart=[];
+
+function formatPrice(price){
+ return "₦" + price.toLocaleString();
+}
+
+function displayProducts(list=products){
+
+ const container=document.getElementById("products");
+
+ if(list.length===0){
+   container.innerHTML="<p>No products found.</p>";
+   return;
+ }
+
+ container.innerHTML=list.map(product=>`
+
+ <div class="card">
+
+   <img class="product-img"
+        src="${product.image}"
+        alt="${product.name}">
+
+   <div class="card-body">
+
+     <div class="product-name">
+       ${product.name}
+     </div>
+
+     <div class="category-name">
+       ${product.category}
+     </div>
+
+     <div class="price">
+       ${formatPrice(product.price)}
+     </div>
+
+     <button class="add"
+       onclick="addToCart(${product.id})">
+       Add to Cart
+     </button>
+
+   </div>
+
+ </div>
+
+ `).join("");
+}
+
+function addToCart(id){
+
+ const product=products.find(p=>p.id===id);
+
+ cart.push(product);
+
+ document.getElementById("cartCount").textContent=cart.length;
+
+ alert(product.name+" added to cart.");
+}
+
+function showCart(){
+
+ if(cart.length===0){
+   alert("Your cart is empty.");
+   return;
+ }
+
+ let total=cart.reduce((sum,item)=>sum+item.price,0);
+
+ alert(
+   "Items in cart: "+cart.length+
+   "\\nTotal: "+formatPrice(total)
+ );
+}
+
+function filterCategory(category,button){
+
+ document.querySelectorAll(".category")
+ .forEach(btn=>btn.classList.remove("active"));
+
+ button.classList.add("active");
+
+ if(category==="All"){
+   displayProducts();
+ }else{
+   displayProducts(
+     products.filter(p=>p.category===category)
+   );
+ }
+}
+
+function searchProducts(){
+
+ const query=document
+   .getElementById("searchInput")
+   .value
+   .toLowerCase();
+
+ const results=products.filter(p=>
+   p.name.toLowerCase().includes(query) ||
+   p.category.toLowerCase().includes(query)
+ );
+
+ displayProducts(results);
+}
+
+function scrollToProducts(){
+
+ document.getElementById("productsTitle")
+ .scrollIntoView({behavior:"smooth"});
+}
+
+function openAccount(){
+
+ window.location.href="account.html";
+}
+
+displayProducts();
+
+</script>
+
+</body>
+      </html>
