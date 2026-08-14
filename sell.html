@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AjeMarket — Seller Centre</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#172033}
+header{background:linear-gradient(110deg,#071d35,#164c91,#0bb7a6);color:#fff;padding:16px}
+.nav{max-width:1050px;margin:auto;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:28px;font-weight:900}.logo span{color:#58f2dc}
+button{cursor:pointer;border:0;border-radius:11px;padding:12px 16px;font-weight:800}
+.login{background:#fff;color:#071d35}.primary{background:#146ef5;color:#fff}.dark{background:#273449;color:#fff}
+main{max-width:1050px;margin:auto;padding:20px 15px}.hero{color:#fff;background:linear-gradient(135deg,#ff3f81,#7546ff,#146ef5);border-radius:22px;padding:28px;margin-bottom:18px}
+.hero h1{margin:0 0 8px;font-size:36px}.hero p{line-height:1.5}
+.panel{background:#fff;border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 6px 24px #17284a12}
+.auth{display:none}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}
+label{display:block;font-size:13px;font-weight:800;margin:4px 0}
+input,select,textarea{width:100%;padding:12px;border:1px solid #d7deea;border-radius:10px;font:inherit}
+textarea{min-height:110px}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.types{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.type{background:#fff;border:2px solid #e1e7f0;text-align:left}.type.active{border-color:#ff3f81;background:#fff4f8}
+.notice{padding:13px;border-radius:11px;margin:12px 0;line-height:1.5}.free{background:#eafaf5;color:#116c50}.paid{background:#fff4df;color:#785100}
+.photos{border:2px dashed #ccd6e4;border-radius:12px;padding:15px;text-align:center}.preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.preview img{width:82px;height:82px;object-fit:cover;border-radius:9px}.submit{width:100%;background:linear-gradient(135deg,#ff9f1c,#ff3f81);color:#fff;font-size:16px}
+.status{display:none;padding:12px;border-radius:10px;margin-top:10px;font-weight:700}.ok{display:block;background:#eafaf5;color:#116c50}.err{display:block;background:#ffecec;color:#a40000}
+.small{font-size:12px;color:#687386}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.types{grid-template-columns:1fr}.hero h1{font-size:30px}}
+</style>
+</head>
+<body>
+<header><div class="nav"><div class="logo">Aje<span>Market</span></div><button class="login" onclick="showAuth()">Seller Login</button></div></header>
+<main>
+<section class="hero"><h1>Sell on AjeMarket</h1><p>Sell electronics, fashion, household items, toys, cars, land, houses, apartments and more.</p></section>
+
+<section class="panel auth" id="auth">
+<h2>Seller Account</h2>
+<p class="small">Create an account or log in.</p>
+<label>Full name</label><input id="name" placeholder="Your full name">
+<label>Phone</label><input id="phone" placeholder="08012345678">
+<label>Email</label><input id="email" type="email" placeholder="you@example.com">
+<label>Password</label><input id="password" type="password" placeholder="At least 6 characters">
+<div class="actions">
+<button class="primary" onclick="signup()">Create Account</button>
+<button class="dark" onclick="login()">Login</button>
+<button class="dark" onclick="logout()">Logout</button>
+</div>
+<div id="authStatus" class="status"></div>
+</section>
+
+<section class="panel">
+<h2>Create your listing</h2>
+<div class="types">
+<button class="type active" onclick="typePick('product',this)">🛍️ <b>Normal Product</b><br><span class="small">FREE</span></button>
+<button class="type" onclick="typePick('car',this)">🚗 <b>Car</b><br><span class="small">₦2,500</span></button>
+<button class="type" onclick="typePick('property',this)">🏠 <b>Property</b><br><span class="small">From ₦3,000</span></button>
+</div>
+<div id="fee" class="notice free"><b>FREE:</b> Normal products can be listed without a listing fee.</div>
+<form onsubmit="continueListing(event)">
+<div class="grid">
+<div class="full"><label>Listing title</label><input id="title" required placeholder="e.g. Samsung Galaxy S25"></div>
+<div><label>Price (₦)</label><input id="price" type="number" min="0" required></div>
+<div><label>Category</label><select id="category"><option>Electronics</option><option>Fashion</option><option>Home & Household</option><option>Toys & Kids</option><option>Appliances</option><option>Phones & Tablets</option><option>Computers</option><option>Furniture</option><option>Construction</option><option>Cars</option><option>Land</option><option>Houses</option><option>Apartments</option><option>Commercial Property</option><option>Services</option><option>Other</option></select></div>
+<div><label>Location</label><input id="location" required placeholder="e.g. Ikeja, Lagos"></div>
+<div><label>Subcategory / type</label><input id="subcat" placeholder="e.g. Toyota Camry, 4-bedroom, plot"></div>
+<div class="full"><label>Description</label><textarea id="description" required></textarea></div>
+<div class="full"><label>Photos</label><div class="photos"><input id="photos" type="file" accept="image/*" multiple onchange="preview()"><div id="pics" class="preview"></div></div></div>
+<div class="full"><button class="submit" type="submit">Continue</button><div id="listingStatus" class="status"></div></div>
+</div></form>
+</section>
+
+<section class="panel"><h2>AjeMarket Listing Fees</h2>
+<div class="notice free">🛍️ Normal products — <b>FREE</b></div>
+<div class="notice paid">🚗 Cars — <b>₦2,500</b><br>🌳 Land — <b>₦3,000</b><br>🏠 Houses/Apartments — <b>₦3,000</b><br>🏢 Commercial Property — <b>₦5,000</b></div>
+<p class="small">AjeMarket does not collect the buyer's purchase money. Buyers and sellers arrange the actual sale directly.</p>
+</section>
+</main>
+
+<script>
+const URL="https://zeyoecwbndiocsaqlnuk.supabase.co";
+const KEY="sb_publishable_2QQNc64ugY41jjlvCcsnqw_bFHyQsyz";
+let kind="product";
+
+function showAuth(){document.getElementById("auth").style.display="block";document.getElementById("auth").scrollIntoView({behavior:"smooth"})}
+function authMsg(t,ok){let x=document.getElementById("authStatus");x.textContent=t;x.className="status "+(ok?"ok":"err")}
+async function signup(){
+let email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;
+if(!email||!password){authMsg("Enter email and password.",false);return}
+try{
+let r=await fetch(URL+"/auth/v1/signup",{method:"POST",headers:{"apikey":KEY,"Content-Type":"application/json"},body:JSON.stringify({email,password,data:{full_name:document.getElementById("name").value.trim(),phone:document.getElementById("phone").value.trim()}})});
+let d=await r.json();if(!r.ok){authMsg(d.msg||d.message||"Sign up failed.",false);return}
+if(d.access_token)save(d);authMsg(d.access_token?"Account created and logged in.":"Account created. Check your email if confirmation is required, then log in.",true)
+}catch(e){authMsg("Connection error: "+e.message,false)}
+}
+async function login(){
+let email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;
+if(!email||!password){authMsg("Enter email and password.",false);return}
+try{
+let r=await fetch(URL+"/auth/v1/token?grant_type=password",{method:"POST",headers:{"apikey":KEY,"Content-Type":"application/json"},body:JSON.stringify({email,password})});
+let d=await r.json();if(!r.ok){authMsg(d.error_description||d.msg||"Login failed.",false);return}
+save(d);authMsg("Login successful.",true)
+}catch(e){authMsg("Connection error: "+e.message,false)}
+}
+function save(d){localStorage.setItem("aje_access_token",d.access_token||"");localStorage.setItem("aje_refresh_token",d.refresh_token||"");localStorage.setItem("aje_user_id",d.user?.id||"")}
+function logout(){localStorage.removeItem("aje_access_token");localStorage.removeItem("aje_refresh_token");localStorage.removeItem("aje_user_id");authMsg("Logged out.",true)}
+function typePick(t,b){kind=t;document.querySelectorAll(".type").forEach(x=>x.classList.remove("active"));b.classList.add("active");let f=document.getElementById("fee");if(t==="product"){f.className="notice free";f.innerHTML="<b>FREE:</b> Normal products can be listed without a listing fee."}else if(t==="car"){f.className="notice paid";f.innerHTML="<b>CAR:</b> ₦2,500 listing fee before publication."}else{f.className="notice paid";f.innerHTML="<b>PROPERTY:</b> Land ₦3,000, houses/apartments ₦3,000, commercial property ₦5,000."}}
+function preview(){let b=document.getElementById("pics");b.innerHTML="";[...document.getElementById("photos").files].slice(0,8).forEach(f=>{let i=document.createElement("img");i.src=URL.createObjectURL(f);b.appendChild(i)})}
+function continueListing(e){e.preventDefault();let s=document.getElementById("listingStatus");if(!localStorage.getItem("aje_access_token")){s.className="status err";s.textContent="Please create a seller account or log in first.";showAuth();return}s.className="status ok";s.textContent=kind==="product"?"FREE listing ready. Next we connect saving to the AjeMarket database.":"Payment required before this listing can be published. Next we connect the payment step."}
+</script>
+</body>
+</html>
