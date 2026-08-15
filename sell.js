@@ -1,7 +1,102 @@
-import {supabase,user} from "./supabase.js";
-const form=document.querySelector("#form"),msg=document.querySelector("#msg"),photos=document.querySelector("#photos"),pre=document.querySelector("#previews");
-photos.onchange=()=>{pre.innerHTML="";[...photos.files].slice(0,8).forEach(f=>{const i=document.createElement("img");i.src=URL.createObjectURL(f);pre.appendChild(i)})};
-form.onsubmit=async e=>{e.preventDefault();const u=await user();if(!u){location.href="account.html";return}const fd=new FormData(form);msg.textContent="Uploading…";let image_url=null;
-const fs=[...photos.files].slice(0,8);if(fs.length){const f=fs[0],path=`${u.id}/${crypto.randomUUID()}-${f.name.replace(/[^a-zA-Z0-9._-]/g,"")}`;const up=await supabase.storage.from("product-images").upload(path,f,{upsert:false});if(up.error){msg.textContent="Image upload failed: "+up.error.message;return}image_url=supabase.storage.from("product-images").getPublicUrl(path).data.publicUrl;}
-const payload={seller_id:u.id,title:fd.get("title"),category:fd.get("category"),price:Number(fd.get("price")),location:fd.get("location"),seller_phone:fd.get("phone"),description:fd.get("description"),image_url,status:"active"};
-const {error}=await supabase.from("products").insert(payload);if(error){msg.textContent=error.message;return}msg.textContent="Listing published successfully.";form.reset();pre.innerHTML="";};
+import { supabase, user } from "./supabase.js";
+
+const form = document.querySelector("#form");
+const msg = document.querySelector("#msg");
+const photos = document.querySelector("#photos");
+const pre = document.querySelector("#previews");
+
+photos.onchange = () => {
+  pre.innerHTML = "";
+
+  [...photos.files].slice(0, 8).forEach(file => {
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    pre.appendChild(img);
+  });
+};
+
+form.onsubmit = async e => {
+  e.preventDefault();
+
+  const u = await user();
+
+  if (!u) {
+    location.href = "account.html";
+    return;
+  }
+
+  const fd = new FormData(form);
+
+  const title = String(fd.get("title") || "").trim();
+  const category = String(fd.get("category") || "").trim();
+  const location = String(fd.get("location") || "").trim();
+  const phone = String(fd.get("phone") || "").trim();
+  const description = String(fd.get("description") || "").trim();
+  const price = Number(fd.get("price"));
+
+  if (!title || !category || !price || !location || !phone) {
+    msg.textContent = "Please complete all required fields.";
+    return;
+  }
+
+  msg.textContent = "Uploading photos…";
+
+  const files = [...photos.files].slice(0, 8);
+  const imageUrls = [];
+
+  // Upload all selected photos
+  for (const file of files) {
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "");
+    const path = `${u.id}/${crypto.randomUUID()}-${safeName}`;
+
+    const { error: uploadError } = await supabase
+      .storage
+      .from("product-images")
+      .upload(path, file, {
+        upsert: false
+      });
+
+    if (uploadError) {
+      msg.textContent = "Image upload failed: " + uploadError.message;
+      return;
+    }
+
+    const { data: publicData } = supabase
+      .storage
+      .from("product-images")
+      .getPublicUrl(path);
+
+    if (publicData?.publicUrl) {
+      imageUrls.push(publicData.publicUrl);
+    }
+  }
+
+  msg.textContent = "Publishing listing…";
+
+  const payload = {
+    seller_id: u.id,
+    name: title,
+    title: title,
+    category,
+    price,
+    location,
+    seller_phone: phone,
+    description,
+    image_url: imageUrls[0] || null,
+    status: "active"
+  };
+
+  const { error } = await supabase
+    .from("products")
+    .insert(payload);
+
+  if (error) {
+    msg.textContent = error.message;
+    return;
+  }
+
+  msg.textContent = "Listing published successfully.";
+
+  form.reset();
+  pre.innerHTML = ""; 
+};
