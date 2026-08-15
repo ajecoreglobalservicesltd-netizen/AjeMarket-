@@ -1,7 +1,163 @@
 import {supabase,esc,money,user} from "./supabase.js";
-const root=document.querySelector("#product"),id=new URLSearchParams(location.search).get("id");
-async function load(){if(!id){root.innerHTML="<div class=empty>Product not found.</div>";return}const {data:p,error}=await supabase.from("products").select("*,profiles:seller_id(full_name,phone,avatar_url,verified)").eq("id",id).single();if(error){root.innerHTML=`<div class=empty>${esc(error.message)}</div>`;return}
-root.innerHTML=`<div class="product"><div class="productimage">${p.image_url?`<img src="${esc(p.image_url)}">`:"AjeMarket"}</div><div class="panel"><small>${esc(p.category)}</small><h1>${esc(p.title)}</h1><div class="bigprice">${money(p.price)}</div><p>📍 ${esc(p.location||"")}</p><p>${esc(p.description||"")}</p><div class="notice"><b>Before paying:</b> Physically inspect and verify this product and seller.</div><div class="actions">${p.profiles?.phone?`<a class="btn" href="tel:${esc(p.profiles.phone)}">Call seller</a><a class="btn secondary" href="https://wa.me/${String(p.profiles.phone).replace(/\D/g,"")}">WhatsApp</a>`:""}<button class="btn secondary" id="fav">♡ Save</button><button class="btn danger" id="report">Report</button></div><hr><h3>Seller</h3><p><b>${esc(p.profiles?.full_name||"AjeMarket seller")}</b> ${p.profiles?.verified?"✓ Verified":""}</p></div></div>`;
-document.querySelector("#fav").onclick=async()=>{const u=await user();if(!u){location.href="account.html";return}const {error}=await supabase.from("favorites").upsert({user_id:u.id,product_id:id});alert(error?error.message:"Saved to favourites.");};
-document.querySelector("#report").onclick=async()=>{const u=await user();if(!u){location.href="account.html";return}const reason=prompt("Why are you reporting this listing?");if(reason)await supabase.from("reports").insert({reporter_id:u.id,product_id:id,reason});alert("Report submitted.");};
-}load();
+
+const root = document.querySelector("#product");
+const id = new URLSearchParams(location.search).get("id");
+
+async function load() {
+  if (!id) {
+    root.innerHTML = '<div class="empty">Product not found.</div>';
+    return;
+  }
+
+  // Get the product first — no relationship/join required
+  const {data: p, error} = await supabase
+    .from("products")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    root.innerHTML = `<div class="empty">${esc(error.message)}</div>`;
+    return;
+  }
+
+  // Get seller profile separately
+  let profile = null;
+
+  if (p.seller_id) {
+    const {data: seller} = await supabase
+      .from("profiles")
+      .select("full_name,phone,avatar_url,verified")
+      .eq("id", p.seller_id)
+      .maybeSingle();
+
+    profile = seller;
+  }
+
+  const sellerName = profile?.full_name || "AjeMarket seller";
+  const sellerPhone = profile?.phone || p.seller_phone || "";
+
+  root.innerHTML = `
+    <div class="product">
+
+      <div class="productimage">
+        ${
+          p.image_url
+            ? `<img src="${esc(p.image_url)}" alt="${esc(p.title || "Product")}">`
+            : "AjeMarket"
+        }
+      </div>
+
+      <div class="panel">
+
+        <small>${esc(p.category || "")}</small>
+
+        <h1>${esc(p.title || "Untitled product")}</h1>
+
+        <div class="bigprice">
+          ${money(p.price)}
+        </div>
+
+        <p>📍 ${esc(p.location || "")}</p>
+
+        <p>${esc(p.description || "")}</p>
+
+        <div class="notice">
+          <b>Before paying:</b>
+          Physically inspect and verify this product and seller before sending any money.
+        </div>
+
+        <div class="actions">
+
+          ${
+            sellerPhone
+              ? `
+                <a class="btn" href="tel:${esc(sellerPhone)}">
+                  Call seller
+                </a>
+
+                <a
+                  class="btn secondary"
+                  href="https://wa.me/${String(sellerPhone).replace(/\D/g,"")}"
+                  target="_blank"
+                >
+                  WhatsApp
+                </a>
+              `
+              : ""
+          }
+
+          <button class="btn secondary" id="fav">
+            ♡ Save
+          </button>
+
+          <button class="btn danger" id="report">
+            Report
+          </button>
+
+        </div>
+
+        <hr>
+
+        <h3>Seller</h3>
+
+        <p>
+          <b>${esc(sellerName)}</b>
+          ${profile?.verified ? " ✓ Verified" : ""}
+        </p>
+
+        ${
+          sellerPhone
+            ? `<p>📞 ${esc(sellerPhone)}</p>`
+            : ""
+        }
+
+      </div>
+    </div>
+  `;
+
+  // SAVE/FAVOURITE
+  document.querySelector("#fav").onclick = async () => {
+    const u = await user();
+
+    if (!u) {
+      location.href = "account.html";
+      return;
+    }
+
+    const {error} = await supabase
+      .from("favorites")
+      .upsert({
+        user_id: u.id,
+        product_id: id
+      });
+
+    alert(error ? error.message : "Saved to favourites.");
+  };
+
+  // REPORT
+  document.querySelector("#report").onclick = async () => {
+    const u = await user();
+
+    if (!u) {
+      location.href = "account.html";
+      return;
+    }
+
+    const reason = prompt("Why are you reporting this listing?");
+
+    if (!reason) return;
+
+    const {error} = await supabase
+      .from("reports")
+      .insert({
+        reporter_id: u.id,
+        product_id: id,
+        reason
+      });
+
+    alert(error ? error.message : "Report submitted.");
+  };
+}
+
+load(); 
