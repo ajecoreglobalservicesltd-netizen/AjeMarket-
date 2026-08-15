@@ -9,7 +9,7 @@ async function load() {
     return;
   }
 
-  // Get the product first — no relationship/join required
+  // Get product
   const {data: p, error} = await supabase
     .from("products")
     .select("*")
@@ -21,7 +21,7 @@ async function load() {
     return;
   }
 
-  // Get seller profile separately
+  // Get seller profile
   let profile = null;
 
   if (p.seller_id) {
@@ -37,16 +37,70 @@ async function load() {
   const sellerName = profile?.full_name || "AjeMarket seller";
   const sellerPhone = profile?.phone || p.seller_phone || "";
 
+  // Get ALL product images
+  let images = [];
+
+  if (Array.isArray(p.image_urls)) {
+    images = p.image_urls.filter(Boolean);
+  }
+
+  // Support products created before the new image system
+  if (!images.length && p.image_url) {
+    images = [p.image_url];
+  }
+
+  const firstImage = images[0] || "";
+
+  // Build photo gallery
+  const gallery = images.length
+    ? `
+      <div class="aje-gallery">
+
+        <div class="aje-main-image">
+          <img
+            id="mainProductImage"
+            src="${esc(firstImage)}"
+            alt="${esc(p.title || "Product")}"
+          >
+        </div>
+
+        ${
+          images.length > 1
+            ? `
+              <div class="aje-photo-count">
+                ${images.length} photos
+              </div>
+
+              <div class="aje-thumbnails">
+                ${images.map((image,index) => `
+                  <button
+                    type="button"
+                    class="aje-thumbnail ${index === 0 ? "active" : ""}"
+                    data-image="${esc(image)}"
+                  >
+                    <img
+                      src="${esc(image)}"
+                      alt="Product photo ${index + 1}"
+                    >
+                  </button>
+                `).join("")}
+              </div>
+            `
+            : ""
+        }
+
+      </div>
+    `
+    : `
+      <div class="productimage">
+        AjeMarket
+      </div>
+    `;
+
   root.innerHTML = `
     <div class="product">
 
-      <div class="productimage">
-        ${
-          p.image_url
-            ? `<img src="${esc(p.image_url)}" alt="${esc(p.title || "Product")}">`
-            : "AjeMarket"
-        }
-      </div>
+      ${gallery}
 
       <div class="panel">
 
@@ -64,7 +118,8 @@ async function load() {
 
         <div class="notice">
           <b>Before paying:</b>
-          Physically inspect and verify this product and seller before sending any money.
+          Physically inspect and verify this product and seller
+          before sending any money.
         </div>
 
         <div class="actions">
@@ -72,13 +127,18 @@ async function load() {
           ${
             sellerPhone
               ? `
-                <a class="btn" href="tel:${esc(sellerPhone)}">
+                <a
+                  class="btn"
+                  href="tel:${esc(sellerPhone)}"
+                >
                   Call seller
                 </a>
 
                 <a
                   class="btn secondary"
-                  href="https://wa.me/${String(sellerPhone).replace(/\D/g,"")}"
+                  href="https://wa.me/${String(
+                    sellerPhone
+                  ).replace(/\D/g,"")}"
                   target="_blank"
                 >
                   WhatsApp
@@ -116,48 +176,94 @@ async function load() {
     </div>
   `;
 
-  // SAVE/FAVOURITE
-  document.querySelector("#fav").onclick = async () => {
-    const u = await user();
+  // PHOTO SWITCHING
+  const mainImage =
+    document.querySelector("#mainProductImage");
 
-    if (!u) {
-      location.href = "account.html";
-      return;
-    }
+  document
+    .querySelectorAll(".aje-thumbnail")
+    .forEach(button => {
 
-    const {error} = await supabase
-      .from("favorites")
-      .upsert({
-        user_id: u.id,
-        product_id: id
-      });
+      button.onclick = () => {
 
-    alert(error ? error.message : "Saved to favourites.");
-  };
+        const image = button.dataset.image;
+
+        if (mainImage && image) {
+          mainImage.src = image;
+        }
+
+        document
+          .querySelectorAll(".aje-thumbnail")
+          .forEach(item => {
+            item.classList.remove("active");
+          });
+
+        button.classList.add("active");
+      };
+    });
+
+  // SAVE / FAVOURITE
+  const fav = document.querySelector("#fav");
+
+  if (fav) {
+    fav.onclick = async () => {
+
+      const u = await user();
+
+      if (!u) {
+        location.href = "account.html";
+        return;
+      }
+
+      const {error} = await supabase
+        .from("favorites")
+        .upsert({
+          user_id: u.id,
+          product_id: id
+        });
+
+      alert(
+        error
+          ? error.message
+          : "Saved to favourites."
+      );
+    };
+  }
 
   // REPORT
-  document.querySelector("#report").onclick = async () => {
-    const u = await user();
+  const report = document.querySelector("#report");
 
-    if (!u) {
-      location.href = "account.html";
-      return;
-    }
+  if (report) {
+    report.onclick = async () => {
 
-    const reason = prompt("Why are you reporting this listing?");
+      const u = await user();
 
-    if (!reason) return;
+      if (!u) {
+        location.href = "account.html";
+        return;
+      }
 
-    const {error} = await supabase
-      .from("reports")
-      .insert({
-        reporter_id: u.id,
-        product_id: id,
-        reason
-      });
+      const reason = prompt(
+        "Why are you reporting this listing?"
+      );
 
-    alert(error ? error.message : "Report submitted.");
-  };
+      if (!reason) return;
+
+      const {error} = await supabase
+        .from("reports")
+        .insert({
+          reporter_id: u.id,
+          product_id: id,
+          reason
+        });
+
+      alert(
+        error
+          ? error.message
+          : "Report submitted."
+      );
+    };
+  }
 }
 
-load(); 
+load();
