@@ -1,0 +1,11 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sell — AjeMarket</title><link rel="stylesheet" href="style.css"><script type="module" src="sell.js"></script></head>
+<body><div class="warning">⚠️ Never ask buyers to pay before they physically see and verify the product.</div><header><a class="logo" href="index.html">Aje<span>Market</span></a><nav><a href="index.html">Home</a><a href="sell.html">Sell</a><a href="dashboard.html">Dashboard</a><a href="account.html">Account</a></nav></header>
+<main class="page"><section class="panel"><small>SELLER CENTRE</small><h1>List a product</h1><p class="muted">AjeMarket connects you with buyers. Payment is arranged directly between you and the buyer after inspection.</p>
+<form id="form"><label>Title<input name="title" required maxlength="120" placeholder="e.g. Toyota Camry 2018"></label>
+<label>Category<select name="category" required><option>Phones</option><option>Electronics</option><option>Cars</option><option>Fashion</option><option>Home</option><option>Properties</option><option>Jobs & Services</option><option>Other</option></select></label>
+<label>Price (₦)<input name="price" type="number" min="0" required></label><label>Location<input name="location" required placeholder="Ikeja, Lagos"></label>
+<label>Seller phone/WhatsApp<input name="phone" placeholder="08012345678"></label>
+<label>Description<textarea name="description" rows="6" required></textarea></label>
+<label>Photos <input id="photos" type="file" accept="image/*" multiple required></label><div id="previews" class="thumbs"></div>
+<button class="btn full" type="submit">Publish listing</button><div id="msg" class="status"></div></form></section></main></body></html>
