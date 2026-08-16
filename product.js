@@ -1,4 +1,4 @@
-mport {supabase,esc,money,user} from "./supabase.js";
+import {supabase,esc,money,user} from "./supabase.js";
 
 const root = document.querySelector("#product");
 const id = new URLSearchParams(location.search).get("id");
