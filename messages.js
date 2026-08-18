@@ -1,4 +1,4 @@
-{ supabase, esc, user } from "./supabase.js";
+import { supabase, esc, user, money } from "./supabase.js";
 
 const root = document.querySelector("#messages");
 
@@ -47,7 +47,6 @@ async function showConversations() {
   if (error) {
     root.innerHTML = `
       <div class="empty">
-        Database error:<br>
         ${esc(error.message)}
       </div>
     `;
@@ -73,6 +72,50 @@ async function showConversations() {
     return;
   }
 
+  const productIds = [
+    ...new Set(
+      data.map(c => c.product_id)
+    )
+  ];
+
+  const otherUserIds = [
+    ...new Set(
+      data.map(c =>
+        String(c.buyer_id) ===
+        String(currentUser.id)
+          ? c.seller_id
+          : c.buyer_id
+      )
+    )
+  ];
+
+  let products = [];
+  let profiles = [];
+
+  if (productIds.length) {
+    const { data: productData } =
+      await supabase
+        .from("products")
+        .select(
+          "id,title,name,price,image_url"
+        )
+        .in("id", productIds);
+
+    products = productData || [];
+  }
+
+  if (otherUserIds.length) {
+    const { data: profileData } =
+      await supabase
+        .from("profiles")
+        .select(
+          "id,full_name,phone,avatar_url"
+        )
+        .in("id", otherUserIds);
+
+    profiles = profileData || [];
+  }
+
   root.innerHTML = `
     <div class="messages-box">
 
@@ -82,11 +125,34 @@ async function showConversations() {
 
         ${data.map(c => {
 
-          const otherPerson =
+          const otherId =
             String(c.buyer_id) ===
             String(currentUser.id)
-              ? "Seller"
-              : "Buyer";
+              ? c.seller_id
+              : c.buyer_id;
+
+          const profile =
+            profiles.find(
+              p =>
+                String(p.id) ===
+                String(otherId)
+            );
+
+          const product =
+            products.find(
+              p =>
+                String(p.id) ===
+                String(c.product_id)
+            );
+
+          const personName =
+            profile?.full_name ||
+            "AjeMarket user";
+
+          const productName =
+            product?.title ||
+            product?.name ||
+            "Product";
 
           return `
             <a
@@ -95,13 +161,22 @@ async function showConversations() {
             >
 
               <b>
-                ${otherPerson}
+                ${esc(personName)}
               </b>
 
-              <div class="muted">
-                Product ID:
-                ${esc(c.product_id)}
+              <div>
+                ${esc(productName)}
               </div>
+
+              ${
+                product?.price != null
+                  ? `
+                    <small class="muted">
+                      ${money(product.price)}
+                    </small>
+                  `
+                  : ""
+              }
 
               <small class="muted">
                 ${new Date(
@@ -123,14 +198,16 @@ async function showConversations() {
 async function openConversation(
   conversationId
 ) {
-  const { data: conversation, error } =
-    await supabase
-      .from("conversations")
-      .select(
-        "id,product_id,buyer_id,seller_id"
-      )
-      .eq("id", conversationId)
-      .maybeSingle();
+  const {
+    data: conversation,
+    error
+  } = await supabase
+    .from("conversations")
+    .select(
+      "id,product_id,buyer_id,seller_id"
+    )
+    .eq("id", conversationId)
+    .maybeSingle();
 
   if (error) {
     root.innerHTML = `
@@ -170,6 +247,53 @@ async function openConversation(
   currentConversation =
     conversation;
 
+  let product = null;
+  let profile = null;
+
+  const { data: productData } =
+    await supabase
+      .from("products")
+      .select(
+        "id,title,name,price,image_url"
+      )
+      .eq(
+        "id",
+        conversation.product_id
+      )
+      .maybeSingle();
+
+  product = productData;
+
+  const otherUserId =
+    isBuyer
+      ? conversation.seller_id
+      : conversation.buyer_id;
+
+  const { data: profileData } =
+    await supabase
+      .from("profiles")
+      .select(
+        "id,full_name,phone,avatar_url"
+      )
+      .eq(
+        "id",
+        otherUserId
+      )
+      .maybeSingle();
+
+  profile = profileData;
+
+  const personName =
+    profile?.full_name ||
+    (isBuyer
+      ? "AjeMarket seller"
+      : "AjeMarket buyer");
+
+  const productName =
+    product?.title ||
+    product?.name ||
+    "Product";
+
   root.innerHTML = `
     <div class="chat-container">
 
@@ -184,16 +308,49 @@ async function openConversation(
 
         <div>
           <b>
-            Buyer & Seller Chat
+            Chat with ${esc(personName)}
           </b>
 
           <div class="muted">
-            Product:
-            ${esc(conversation.product_id)}
+            ${esc(productName)}
+            ${
+              product?.price != null
+                ? ` · ${money(product.price)}`
+                : ""
+            }
           </div>
         </div>
 
       </div>
+
+      ${
+        product?.image_url
+          ? `
+            <div class="chat-product">
+              <img
+                src="${esc(product.image_url)}"
+                alt="${esc(productName)}"
+              >
+
+              <div>
+                <b>
+                  ${esc(productName)}
+                </b>
+
+                ${
+                  product?.price != null
+                    ? `
+                      <div class="muted">
+                        ${money(product.price)}
+                      </div>
+                    `
+                    : ""
+                }
+              </div>
+            </div>
+          `
+          : ""
+      }
 
       <div
         id="chatMessages"
@@ -240,19 +397,21 @@ async function loadMessages() {
     return;
   }
 
-  const { data, error } =
-    await supabase
-      .from("messages")
-      .select(
-        "id,conversation_id,sender_id,message,is_read,created_at"
-      )
-      .eq(
-        "conversation_id",
-        currentConversation.id
-      )
-      .order("created_at", {
-        ascending: true
-      });
+  const {
+    data,
+    error
+  } = await supabase
+    .from("messages")
+    .select(
+      "id,conversation_id,sender_id,message,is_read,created_at"
+    )
+    .eq(
+      "conversation_id",
+      currentConversation.id
+    )
+    .order("created_at", {
+      ascending: true
+    });
 
   const chat =
     document.querySelector(
@@ -282,33 +441,36 @@ async function loadMessages() {
     return;
   }
 
-  chat.innerHTML = data.map(message => {
+  chat.innerHTML = data
+    .map(message => {
 
-    const mine =
-      String(message.sender_id) ===
-      String(currentUser.id);
+      const mine =
+        String(message.sender_id) ===
+        String(currentUser.id);
 
-    return `
-      <div
-        class="chat-message ${
-          mine ? "mine" : "theirs"
-        }"
-      >
+      return `
+        <div
+          class="chat-message ${
+            mine
+              ? "mine"
+              : "theirs"
+          }"
+        >
 
-        <div class="chat-bubble">
-          ${esc(message.message)}
+          <div class="chat-bubble">
+            ${esc(message.message)}
+          </div>
+
+          <small class="muted">
+            ${new Date(
+              message.created_at
+            ).toLocaleString()}
+          </small>
+
         </div>
-
-        <small class="muted">
-          ${new Date(
-            message.created_at
-          ).toLocaleString()}
-        </small>
-
-      </div>
-    `;
-
-  }).join("");
+      `;
+    })
+    .join("");
 
   chat.scrollTop =
     chat.scrollHeight;
@@ -337,3 +499,51 @@ async function sendMessage(event) {
   }
 
   input.disabled = true;
+
+  if (button) {
+    button.disabled = true;
+    button.textContent =
+      "Sending...";
+  }
+
+  const { error } =
+    await supabase
+      .from("messages")
+      .insert({
+        conversation_id:
+          currentConversation.id,
+        sender_id:
+          currentUser.id,
+        message: text
+      });
+
+  if (error) {
+    alert(
+      "Message failed: " +
+      error.message
+    );
+
+    input.disabled = false;
+
+    if (button) {
+      button.disabled = false;
+      button.textContent =
+        "Send";
+    }
+
+    return;
+  }
+
+  input.value = "";
+  input.disabled = false;
+
+  if (button) {
+    button.disabled = false;
+    button.textContent =
+      "Send";
+  }
+
+  await loadMessages();
+}
+
+start();
