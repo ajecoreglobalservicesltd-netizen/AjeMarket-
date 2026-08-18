@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Seller Dashboard — AjeMarket</title>
+<link rel="stylesheet" href="style.css">
+<script type="module" src="dashboard.js"></script>
+<style>
+.message-nav{position:relative;display:inline-flex;align-items:center;gap:7px}
+.message-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#00c98b;
+  display:inline-block;
+  box-shadow:0 0 0 3px rgba(0,201,139,.14),0 0 10px rgba(0,201,139,.65);
+  animation:ajePulse 1.8s infinite;
+}
+.message-dot.hidden{display:none}
+@keyframes ajePulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.25);opacity:.75}
+}
+</style>
+</head>
+<body>
+<div class="warning">⚠️ AjeMarket is not an escrow/payment service. Inspect products physically before paying sellers.</div>
+<header>
+<a class="logo" href="index.html">Aje<span>Market</span></a>
+<nav>
+<a href="index.html">Home</a>
+<a href="sell.html">Sell</a>
+<a href="messages.html" class="message-nav">Messages <span id="messageNotification" class="message-dot hidden" aria-label="Unread messages"></span></a>
+<a href="account.html">Account</a>
+</nav>
+</header>
+<main class="page">
+<section class="panel">
+<small>SELLER DASHBOARD</small>
+<h1>My listings</h1>
+<div id="dash"></div>
+</section>
+</main>
+</body>
+</html>
