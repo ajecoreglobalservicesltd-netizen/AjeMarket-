@@ -1,4 +1,4 @@
-import { supabase, esc, user } from "./supabase.js";
+{ supabase, esc, user } from "./supabase.js";
 
 const root = document.querySelector("#messages");
 
@@ -337,52 +337,3 @@ async function sendMessage(event) {
   }
 
   input.disabled = true;
-
-  if (button) {
-    button.disabled = true;
-    button.textContent =
-      "Sending...";
-  }
-
-  const { error } =
-    await supabase
-      .from("messages")
-      .insert({
-        conversation_id:
-          currentConversation.id,
-        sender_id:
-          currentUser.id,
-        message: text
-      });
-
-  if (error) {
-    alert(
-      "Message failed: " +
-      error.message
-    );
-
-    input.disabled = false;
-
-    if (button) {
-      button.disabled = false;
-      button.textContent =
-        "Send";
-    }
-
-    return;
-  }
-
-  input.value = "";
-
-  input.disabled = false;
-
-  if (button) {
-    button.disabled = false;
-    button.textContent =
-      "Send";
-  }
-
-  await loadMessages();
-}
-
-start();
