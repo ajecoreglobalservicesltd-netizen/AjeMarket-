@@ -1,31 +1,34 @@
-import {supabase,esc,money,user} from "./supabase.js";
+import { supabase, esc, money, user } from "./supabase.js";
 
 const root = document.querySelector("#product");
 const id = new URLSearchParams(location.search).get("id");
 
 async function load() {
   if (!id) {
-    root.innerHTML = '<div class="empty">Product not found.</div>';
+    root.innerHTML =
+      '<div class="empty">Product not found.</div>';
     return;
   }
 
-  // Get product
-  const {data: p, error} = await supabase
+  const {
+    data: p,
+    error
+  } = await supabase
     .from("products")
     .select("*")
     .eq("id", id)
     .single();
 
   if (error) {
-    root.innerHTML = `<div class="empty">${esc(error.message)}</div>`;
+    root.innerHTML =
+      `<div class="empty">${esc(error.message)}</div>`;
     return;
   }
 
-  // Get seller profile
   let profile = null;
 
   if (p.seller_id) {
-    const {data: seller} = await supabase
+    const { data: seller } = await supabase
       .from("profiles")
       .select("full_name,phone,avatar_url,verified")
       .eq("id", p.seller_id)
@@ -34,24 +37,28 @@ async function load() {
     profile = seller;
   }
 
-  const sellerName = profile?.full_name || "AjeMarket seller";
-  const sellerPhone = profile?.phone || p.seller_phone || "";
+  const sellerName =
+    profile?.full_name ||
+    "AjeMarket seller";
 
-  // Get ALL product images
+  const sellerPhone =
+    profile?.phone ||
+    p.seller_phone ||
+    "";
+
   let images = [];
 
   if (Array.isArray(p.image_urls)) {
     images = p.image_urls.filter(Boolean);
   }
 
-  // Support products created before the new image system
   if (!images.length && p.image_url) {
     images = [p.image_url];
   }
 
-  const firstImage = images[0] || "";
+  const firstImage =
+    images[0] || "";
 
-  // Build photo gallery
   const gallery = images.length
     ? `
       <div class="aje-gallery">
@@ -60,7 +67,9 @@ async function load() {
           <img
             id="mainProductImage"
             src="${esc(firstImage)}"
-            alt="${esc(p.title || "Product")}"
+            alt="${esc(
+              p.title || "Product"
+            )}"
           >
         </div>
 
@@ -72,18 +81,30 @@ async function load() {
               </div>
 
               <div class="aje-thumbnails">
-                ${images.map((image,index) => `
-                  <button
-                    type="button"
-                    class="aje-thumbnail ${index === 0 ? "active" : ""}"
-                    data-image="${esc(image)}"
-                  >
-                    <img
-                      src="${esc(image)}"
-                      alt="Product photo ${index + 1}"
-                    >
-                  </button>
-                `).join("")}
+                ${images
+                  .map(
+                    (image, index) => `
+                      <button
+                        type="button"
+                        class="aje-thumbnail ${
+                          index === 0
+                            ? "active"
+                            : ""
+                        }"
+                        data-image="${esc(
+                          image
+                        )}"
+                      >
+                        <img
+                          src="${esc(image)}"
+                          alt="Product photo ${
+                            index + 1
+                          }"
+                        >
+                      </button>
+                    `
+                  )
+                  .join("")}
               </div>
             `
             : ""
@@ -104,32 +125,57 @@ async function load() {
 
       <div class="panel">
 
-        <small>${esc(p.category || "")}</small>
+        <small>
+          ${esc(p.category || "")}
+        </small>
 
-        <h1>${esc(p.title || "Untitled product")}</h1>
+        <h1>
+          ${esc(
+            p.title ||
+            "Untitled product"
+          )}
+        </h1>
 
         <div class="bigprice">
           ${money(p.price)}
         </div>
 
-        <p>📍 ${esc(p.location || "")}</p>
+        <p>
+          📍 ${esc(
+            p.location || ""
+          )}
+        </p>
 
-        <p>${esc(p.description || "")}</p>
+        <p>
+          ${esc(
+            p.description || ""
+          )}
+        </p>
 
         <div class="notice">
           <b>Before paying:</b>
-          Physically inspect and verify this product and seller
-          before sending any money.
+          Physically inspect and verify
+          this product and seller before
+          sending any money.
         </div>
 
         <div class="actions">
+
+          <button
+            class="btn"
+            id="messageSeller"
+          >
+            Message Seller
+          </button>
 
           ${
             sellerPhone
               ? `
                 <a
                   class="btn"
-                  href="tel:${esc(sellerPhone)}"
+                  href="tel:${esc(
+                    sellerPhone
+                  )}"
                 >
                   Call seller
                 </a>
@@ -138,8 +184,9 @@ async function load() {
                   class="btn secondary"
                   href="https://wa.me/${String(
                     sellerPhone
-                  ).replace(/\D/g,"")}"
+                  ).replace(/\D/g, "")}"
                   target="_blank"
+                  rel="noopener"
                 >
                   WhatsApp
                 </a>
@@ -147,11 +194,17 @@ async function load() {
               : ""
           }
 
-          <button class="btn secondary" id="fav">
+          <button
+            class="btn secondary"
+            id="fav"
+          >
             ♡ Save
           </button>
 
-          <button class="btn danger" id="report">
+          <button
+            class="btn danger"
+            id="report"
+          >
             Report
           </button>
 
@@ -162,13 +215,26 @@ async function load() {
         <h3>Seller</h3>
 
         <p>
-          <b>${esc(sellerName)}</b>
-          ${profile?.verified ? " ✓ Verified" : ""}
+          <b>
+            ${esc(sellerName)}
+          </b>
+
+          ${
+            profile?.verified
+              ? " ✓ Verified"
+              : ""
+          }
         </p>
 
         ${
           sellerPhone
-            ? `<p>📞 ${esc(sellerPhone)}</p>`
+            ? `
+              <p>
+                📞 ${esc(
+                  sellerPhone
+                )}
+              </p>
+            `
             : ""
         }
 
@@ -176,93 +242,260 @@ async function load() {
     </div>
   `;
 
+  // ==========================================
+  // MESSAGE SELLER
+  // ==========================================
+
+  const messageButton =
+    document.querySelector(
+      "#messageSeller"
+    );
+
+  if (messageButton) {
+    messageButton.onclick =
+      async () => {
+
+        const currentUser =
+          await user();
+
+        if (!currentUser) {
+          location.href =
+            "account.html";
+          return;
+        }
+
+        if (
+          String(currentUser.id) ===
+          String(p.seller_id)
+        ) {
+          alert(
+            "You cannot message yourself."
+          );
+          return;
+        }
+
+        messageButton.disabled =
+          true;
+
+        messageButton.textContent =
+          "Opening...";
+
+        try {
+
+          let conversation = null;
+
+          const {
+            data: existing,
+            error: findError
+          } = await supabase
+            .from("conversations")
+            .select("*")
+            .eq(
+              "product_id",
+              p.id
+            )
+            .eq(
+              "buyer_id",
+              currentUser.id
+            )
+            .eq(
+              "seller_id",
+              p.seller_id
+            )
+            .maybeSingle();
+
+          if (findError) {
+            throw findError;
+          }
+
+          conversation =
+            existing;
+
+          if (!conversation) {
+
+            const {
+              data: created,
+              error: createError
+            } = await supabase
+              .from("conversations")
+              .insert({
+                product_id: p.id,
+                buyer_id:
+                  currentUser.id,
+                seller_id:
+                  p.seller_id
+              })
+              .select()
+              .single();
+
+            if (createError) {
+              throw createError;
+            }
+
+            conversation =
+              created;
+          }
+
+          location.href =
+            `messages.html?conversation=${conversation.id}`;
+
+        } catch (error) {
+
+          console.error(
+            "Conversation error:",
+            error
+          );
+
+          alert(
+            error?.message ||
+            "Unable to open conversation."
+          );
+
+          messageButton.disabled =
+            false;
+
+          messageButton.textContent =
+            "Message Seller";
+        }
+      };
+  }
+
+  // ==========================================
   // PHOTO SWITCHING
+  // ==========================================
+
   const mainImage =
-    document.querySelector("#mainProductImage");
+    document.querySelector(
+      "#mainProductImage"
+    );
 
   document
-    .querySelectorAll(".aje-thumbnail")
+    .querySelectorAll(
+      ".aje-thumbnail"
+    )
     .forEach(button => {
 
       button.onclick = () => {
 
-        const image = button.dataset.image;
+        const image =
+          button.dataset.image;
 
-        if (mainImage && image) {
-          mainImage.src = image;
+        if (
+          mainImage &&
+          image
+        ) {
+          mainImage.src =
+            image;
         }
 
         document
-          .querySelectorAll(".aje-thumbnail")
+          .querySelectorAll(
+            ".aje-thumbnail"
+          )
           .forEach(item => {
-            item.classList.remove("active");
+            item.classList.remove(
+              "active"
+            );
           });
 
-        button.classList.add("active");
+        button.classList.add(
+          "active"
+        );
       };
     });
 
+  // ==========================================
   // SAVE / FAVOURITE
-  const fav = document.querySelector("#fav");
+  // ==========================================
+
+  const fav =
+    document.querySelector(
+      "#fav"
+    );
 
   if (fav) {
-    fav.onclick = async () => {
 
-      const u = await user();
+    fav.onclick =
+      async () => {
 
-      if (!u) {
-        location.href = "account.html";
-        return;
-      }
+        const currentUser =
+          await user();
 
-      const {error} = await supabase
-        .from("favorites")
-        .upsert({
-          user_id: u.id,
-          product_id: id
-        });
+        if (!currentUser) {
+          location.href =
+            "account.html";
+          return;
+        }
 
-      alert(
-        error
-          ? error.message
-          : "Saved to favourites."
-      );
-    };
+        const {
+          error
+        } = await supabase
+          .from("favorites")
+          .upsert({
+            user_id:
+              currentUser.id,
+            product_id:
+              id
+          });
+
+        alert(
+          error
+            ? error.message
+            : "Saved to favourites."
+        );
+      };
   }
 
+  // ==========================================
   // REPORT
-  const report = document.querySelector("#report");
+  // ==========================================
+
+  const report =
+    document.querySelector(
+      "#report"
+    );
 
   if (report) {
-    report.onclick = async () => {
 
-      const u = await user();
+    report.onclick =
+      async () => {
 
-      if (!u) {
-        location.href = "account.html";
-        return;
-      }
+        const currentUser =
+          await user();
 
-      const reason = prompt(
-        "Why are you reporting this listing?"
-      );
+        if (!currentUser) {
+          location.href =
+            "account.html";
+          return;
+        }
 
-      if (!reason) return;
+        const reason =
+          prompt(
+            "Why are you reporting this listing?"
+          );
 
-      const {error} = await supabase
-        .from("reports")
-        .insert({
-          reporter_id: u.id,
-          product_id: id,
-          reason
-        });
+        if (!reason) {
+          return;
+        }
 
-      alert(
-        error
-          ? error.message
-          : "Report submitted."
-      );
-    };
+        const {
+          error
+        } = await supabase
+          .from("reports")
+          .insert({
+            reporter_id:
+              currentUser.id,
+            product_id:
+              id,
+            reason
+          });
+
+        alert(
+          error
+            ? error.message
+            : "Report submitted."
+        );
+      };
   }
 }
 
