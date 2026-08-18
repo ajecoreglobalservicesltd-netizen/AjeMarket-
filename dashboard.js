@@ -102,9 +102,7 @@ async function checkReturnedPayment() {
     params.get("reference") ||
     params.get("trxref");
 
-  if (!reference) {
-    return;
-  }
+  if (!reference) return;
 
   await new Promise(resolve =>
     setTimeout(resolve, 500)
@@ -113,10 +111,103 @@ async function checkReturnedPayment() {
   await verifyPayment(reference);
 }
 
-async function startPayment(
-  product,
-  type
-) {
+
+/* =========================================================
+   MESSAGE NOTIFICATION
+========================================================= */
+
+async function getUnreadMessageCount(u) {
+
+  const { data, error } = await supabase
+    .from("messages")
+    .select("id, sender_id, is_read")
+    .neq("sender_id", u.id)
+    .eq("is_read", false);
+
+  if (error) {
+    console.error(
+      "Unread message check failed:",
+      error.message
+    );
+
+    return 0;
+  }
+
+  return data?.length || 0;
+}
+
+
+async function addMessageNotification(u) {
+
+  const nav = document.querySelector("nav");
+
+  if (!nav) return;
+
+  const messagesLink =
+    [...nav.querySelectorAll("a")]
+      .find(a =>
+        a.getAttribute("href") ===
+        "messages.html"
+      );
+
+  if (!messagesLink) return;
+
+  const unread =
+    await getUnreadMessageCount(u);
+
+  messagesLink.style.position = "relative";
+
+  const oldBadge =
+    messagesLink.querySelector(
+      ".message-notification"
+    );
+
+  if (oldBadge) {
+    oldBadge.remove();
+  }
+
+  if (unread > 0) {
+
+    const badge =
+      document.createElement("span");
+
+    badge.className =
+      "message-notification";
+
+    badge.textContent =
+      unread > 99
+        ? "99+"
+        : unread;
+
+    badge.style.cssText = `
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:18px;
+      height:18px;
+      padding:0 5px;
+      margin-left:6px;
+      border-radius:999px;
+      background:#22c55e;
+      color:white;
+      font-size:11px;
+      font-weight:800;
+      line-height:1;
+      vertical-align:middle;
+      box-shadow:0 0 0 2px rgba(34,197,94,.15);
+    `;
+
+    messagesLink.appendChild(badge);
+  }
+}
+
+
+/* =========================================================
+   PAYMENT
+========================================================= */
+
+async function startPayment(product, type) {
+
   const button =
     document.querySelector(
       `[data-pay="${type}"][data-id="${product.id}"]`
@@ -128,6 +219,7 @@ async function startPayment(
   }
 
   try {
+
     const result =
       await callFunction({
         action: "initialize",
@@ -148,6 +240,7 @@ async function startPayment(
       authorizationUrl;
 
   } catch (error) {
+
     console.error(
       "Payment initialization error:",
       error
@@ -159,6 +252,7 @@ async function startPayment(
     );
 
     if (button) {
+
       button.disabled = false;
 
       button.textContent =
@@ -169,11 +263,25 @@ async function startPayment(
   }
 }
 
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
 async function loadDashboard() {
+
   const u =
     await requireUser();
 
   if (!u) return;
+
+
+  /* MESSAGE NOTIFICATION */
+
+  await addMessageNotification(u);
+
+
+  /* PRODUCTS */
 
   const {
     data,
@@ -193,15 +301,31 @@ async function loadDashboard() {
     );
 
   if (error) {
+
     root.textContent =
       error.message;
+
     return;
   }
 
+
   root.innerHTML = `
-    <a class="btn" href="sell.html">
-      + New listing
-    </a>
+
+    <div class="dashboard-actions">
+
+      <a class="btn" href="sell.html">
+        + New listing
+      </a>
+
+      <a
+        class="btn secondary"
+        href="messages.html"
+      >
+        Messages
+      </a>
+
+    </div>
+
 
     <div class="list">
 
@@ -214,28 +338,28 @@ async function loadDashboard() {
               "ordinary";
 
             const activePromotion =
-              promotion !==
-                "ordinary" &&
+              promotion !== "ordinary" &&
               p.promotion_expires_at &&
               new Date(
                 p.promotion_expires_at
               ) > new Date();
 
             return `
+
               <div class="listrow">
 
                 <div>
 
                   <b>
                     ${esc(
-                      p.title
+                      p.title ||
+                      p.name ||
+                      "Untitled product"
                     )}
                   </b>
 
                   <div class="muted">
-                    ${money(
-                      p.price
-                    )}
+                    ${money(p.price)}
                   </div>
 
                   <div class="muted">
@@ -251,6 +375,7 @@ async function loadDashboard() {
                     ${
                       activePromotion
                         ? `
+
                           <strong>
                             ${
                               promotion ===
@@ -266,11 +391,14 @@ async function loadDashboard() {
                               p.promotion_expires_at
                             ).toLocaleDateString()}
                           </div>
+
                         `
                         : `
+
                           <span class="muted">
                             Ordinary listing
                           </span>
+
                         `
                     }
 
@@ -278,10 +406,12 @@ async function loadDashboard() {
 
                 </div>
 
+
                 ${
                   activePromotion
                     ? ""
                     : `
+
                       <button
                         class="btn small"
                         data-pay="boost"
@@ -297,8 +427,10 @@ async function loadDashboard() {
                       >
                         Premium ₦${PREMIUM_PRICE.toLocaleString()}
                       </button>
+
                     `
                 }
+
 
                 <button
                   data-id="${p.id}"
@@ -308,6 +440,7 @@ async function loadDashboard() {
                 </button>
 
               </div>
+
             `;
           })
           .join("")
@@ -317,6 +450,9 @@ async function loadDashboard() {
 
     </div>
   `;
+
+
+  /* BOOST BUTTONS */
 
   root
     .querySelectorAll(
@@ -336,9 +472,11 @@ async function loadDashboard() {
           );
 
         if (!product) {
+
           alert(
             "Product not found."
           );
+
           return;
         }
 
@@ -348,6 +486,9 @@ async function loadDashboard() {
         );
       };
     });
+
+
+  /* PREMIUM BUTTONS */
 
   root
     .querySelectorAll(
@@ -367,9 +508,11 @@ async function loadDashboard() {
           );
 
         if (!product) {
+
           alert(
             "Product not found."
           );
+
           return;
         }
 
@@ -379,6 +522,9 @@ async function loadDashboard() {
         );
       };
     });
+
+
+  /* DELETE */
 
   root
     .querySelectorAll(".del")
@@ -410,9 +556,11 @@ async function loadDashboard() {
             );
 
           if (error) {
+
             alert(
               error.message
             );
+
             return;
           }
 
@@ -421,8 +569,15 @@ async function loadDashboard() {
     });
 }
 
+
+/* =========================================================
+   START
+========================================================= */
+
 async function start() {
+
   await checkReturnedPayment();
+
   await loadDashboard();
 }
 
