@@ -1,139 +1,80 @@
-/* AjeMarket complete style.css
-   Premium marketplace + chat UI
-*/
+/* =========================================================
+   MESSAGE NOTIFICATION
+========================================================= */
 
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f7f9;color:#10202d}
-a{color:inherit}
-button,input,select,textarea{font:inherit}
+nav a[href="messages.html"] {
+  position: relative;
+}
 
-header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 22px;background:#071524;color:#fff}
-.logo{font-size:25px;font-weight:800;text-decoration:none}
-.logo span{color:#00c98b}
-nav{display:flex;flex-wrap:wrap;gap:14px}
-nav a{color:#dce8ee;text-decoration:none;font-size:14px}
-nav a:hover{color:#00c98b}
+.nav-message-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: #00c98b;
+  box-shadow: 0 0 0 3px rgba(0, 201, 139, 0.15);
+  vertical-align: middle;
+  animation: messagePulse 1.8s infinite;
+}
 
-.warning{padding:10px 14px;background:#fff3cd;color:#604b00;text-align:center;font-size:13px;line-height:1.4}
-main.page,main{width:min(1180px,calc(100% - 28px));margin:24px auto}
-.panel{background:#fff;border:1px solid #e2e8ec;border-radius:18px;padding:22px;box-shadow:0 8px 25px rgba(7,21,36,.06)}
+@keyframes messagePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 201, 139, 0.45);
+  }
 
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 16px;border:0;border-radius:10px;background:#00b982;color:#fff;text-decoration:none;font-weight:700;cursor:pointer}
-.btn:hover{background:#009f70}
-.btn.secondary{background:#e9f0f3;color:#10202d}
-.btn.danger{background:#d64545;color:#fff}
-.btn.small{min-height:34px;padding:7px 11px;font-size:13px}
-.btn.full{width:100%}
-.actions{display:flex;flex-wrap:wrap;gap:10px}
-.muted{color:#72818b}
-.notice{padding:14px;background:#f1f7f5;border:1px solid #d5eee6;border-radius:12px;line-height:1.5}
-.empty{padding:30px 15px;text-align:center;color:#72818b}
-.status{margin-top:12px;color:#60717d}
-.hidden{display:none!important}
+  70% {
+    box-shadow: 0 0 0 7px rgba(0, 201, 139, 0);
+  }
 
-.tabs{display:flex;gap:8px;margin-bottom:18px}
-.tabs button{border:1px solid #d8e1e6;background:#f6f8f9;padding:10px 15px;border-radius:10px;cursor:pointer}
-.tabs button.active{background:#071524;color:#fff;border-color:#071524}
-form label{display:block;margin:13px 0;font-weight:700}
-form input,form select,form textarea{display:block;width:100%;margin-top:7px;padding:12px 13px;border:1px solid #d5dfe4;border-radius:10px;outline:none;background:#fff;color:#10202d}
-form input:focus,form select:focus,form textarea:focus{border-color:#00b982;box-shadow:0 0 0 3px rgba(0,185,130,.1)}
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 201, 139, 0);
+  }
+}
 
-.section-title{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
-.card{overflow:hidden;background:#fff;border:1px solid #e2e8ec;border-radius:16px;box-shadow:0 6px 18px rgba(7,21,36,.05)}
-.card img,.productimage,.noimg{width:100%;height:210px;object-fit:cover;background:#edf2f4}
-.noimg,.productimage{display:flex;align-items:center;justify-content:center;color:#80909a}
-.cardbody{padding:14px}
-.cardbody h3{margin:6px 0}
-.price,.bigprice{font-weight:800;color:#008d6b}
-.bigprice{font-size:30px;margin:10px 0}
+/* Conversation with unread messages */
 
-.hero{min-height:330px;display:flex;align-items:center;padding:35px;border-radius:22px;background:linear-gradient(135deg,#071524,#12364d);color:#fff}
-.hero h1{font-size:clamp(36px,7vw,64px);margin:8px 0}
-.hero p{max-width:620px;color:#c8d6de;line-height:1.6}
-.toolbar{display:grid;grid-template-columns:1fr 180px 180px;gap:10px;margin:22px 0}
-.toolbar input,.toolbar select{width:100%;padding:12px;border:1px solid #d5dfe4;border-radius:10px;background:#fff}
+.conversation-item.has-unread {
+  border-color: #00c98b;
+}
 
-footer{margin-top:40px;padding:30px 20px;background:#071524;color:#c8d6de;text-align:center}
-footer a{color:#fff}
+.conversation-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-/* Product gallery */
-.aje-gallery{margin-bottom:20px}
-.aje-main-image{overflow:hidden;border-radius:18px;background:#edf2f4}
-.aje-main-image img{display:block;width:100%;max-height:560px;object-fit:contain;background:#edf2f4}
-.aje-photo-count{margin-top:8px;color:#72818b;font-size:13px}
-.aje-thumbnails{display:flex;gap:8px;overflow-x:auto;margin-top:10px}
-.aje-thumbnail{flex:0 0 72px;width:72px;height:72px;padding:0;border:2px solid transparent;border-radius:10px;overflow:hidden;background:#edf2f4;cursor:pointer}
-.aje-thumbnail.active{border-color:#00b982}
-.aje-thumbnail img{width:100%;height:100%;object-fit:cover}
+.unread-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #00c98b;
+  box-shadow: 0 0 0 3px rgba(0, 201, 139, 0.12);
+}
 
-/* PREMIUM CHAT */
-.chat-container{width:100%;max-width:760px;margin:20px auto;background:#fff;border:1px solid #e5e7eb;border-radius:22px;overflow:hidden;box-shadow:0 12px 35px rgba(7,21,36,.10)}
-.chat-top{display:flex;align-items:center;gap:14px;padding:18px 20px;background:linear-gradient(135deg,#071524,#0d2538);color:#fff;position:sticky;top:0;z-index:10}
-.chat-top>div{min-width:0}
-.chat-top b{display:block;font-size:17px;line-height:1.3}
-.chat-top .muted{color:#b8c7d3;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chat-top .btn{flex-shrink:0;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.18)}
-.chat-product{display:flex;align-items:center;gap:14px;padding:13px 18px;background:#f5f8fa;border-bottom:1px solid #e5e7eb}
-.chat-product img{width:58px;height:58px;object-fit:cover;border-radius:12px;background:#e9eef2;flex-shrink:0}
-.chat-product b{display:block;color:#071524}
-.chat-product .muted{margin-top:4px}
+/* =========================================================
+   MESSAGE CHECK MARKS
+========================================================= */
 
-.chat-messages{min-height:360px;max-height:58vh;overflow-y:auto;padding:22px 16px;background:radial-gradient(circle at 20% 20%,rgba(0,194,140,.035),transparent 30%),#f3f6f8;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
-.chat-messages::-webkit-scrollbar{width:6px}
-.chat-messages::-webkit-scrollbar-track{background:transparent}
-.chat-messages::-webkit-scrollbar-thumb{background:#b9c5cc;border-radius:20px}
+.message-checks {
+  display: inline-flex;
+  margin-left: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  vertical-align: middle;
+}
 
-.chat-message{display:flex;flex-direction:column;max-width:78%;animation:ajeMessageIn .18s ease-out}
-@keyframes ajeMessageIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-.chat-message.mine{align-self:flex-end;align-items:flex-end}
-.chat-message.theirs{align-self:flex-start;align-items:flex-start}
+.message-status.sent {
+  color: rgba(255, 255, 255, 0.75);
+}
 
-.chat-bubble{padding:11px 14px;line-height:1.45;font-size:15px;word-break:break-word;white-space:pre-wrap;box-shadow:0 2px 5px rgba(7,21,36,.07)}
-.chat-message.theirs .chat-bubble{background:#fff;color:#10202d;border:1px solid #e2e8ec;border-radius:18px 18px 18px 5px}
-.chat-message.mine .chat-bubble{background:linear-gradient(135deg,#00c98b,#00a978);color:#fff;border-radius:18px 18px 5px 18px;box-shadow:0 4px 10px rgba(0,169,120,.18)}
-.chat-message>.muted{font-size:10px;margin:4px 9px 0;color:#8a98a1}
-.chat-message.mine>.muted{text-align:right}
+.message-status.delivered {
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: -3px;
+}
 
-.message-form{display:flex;align-items:center;gap:10px;padding:13px;background:#fff;border-top:1px solid #e5e7eb}
-.message-form input{flex:1;min-width:0;height:48px;padding:0 16px;border:1px solid #d7e0e5;border-radius:25px;background:#f7f9fa;color:#10202d;outline:none;font-size:15px}
-.message-form input:focus{border-color:#00b982;background:#fff;box-shadow:0 0 0 3px rgba(0,185,130,.1)}
-.message-form input::placeholder{color:#8a98a1}
-.message-form button{flex-shrink:0;height:48px;min-width:76px;border:0;border-radius:24px;background:linear-gradient(135deg,#00c98b,#00a978);color:#fff;font-weight:700;cursor:pointer;box-shadow:0 5px 12px rgba(0,169,120,.18)}
-.message-form button:hover{transform:translateY(-1px)}
-.message-form button:disabled{opacity:.55;cursor:not-allowed;transform:none}
-
-.messages-box{width:100%}
-.conversation-list{display:flex;flex-direction:column;gap:10px;margin-top:18px}
-.conversation-item{display:block;padding:16px;background:#fff;border:1px solid #e3e9ed;border-radius:16px;color:#10202d;text-decoration:none}
-.conversation-item:hover{border-color:#00bd87;box-shadow:0 7px 18px rgba(7,21,36,.08)}
-.conversation-item b{display:block;font-size:16px;margin-bottom:4px}
-.conversation-item>div{color:#43545f;font-size:14px;margin-bottom:5px}
-.conversation-item small{display:block;margin-top:3px}
-
-@media(max-width:700px){
-  header{padding:13px 14px;align-items:flex-start}
-  .logo{font-size:21px}
-  nav{justify-content:flex-end;gap:9px}
-  nav a{font-size:12px}
-  main.page,main{width:min(100% - 18px,1180px);margin:16px auto}
-  .panel{padding:17px;border-radius:15px}
-  .toolbar{grid-template-columns:1fr}
-  .hero{min-height:300px;padding:25px}
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .card img,.productimage,.noimg{height:150px}
-  .cardbody{padding:10px}
-  .cardbody h3{font-size:14px}
-  .chat-container{margin:0;border-radius:0;border-left:0;border-right:0;box-shadow:none}
-  .chat-top{padding:14px}
-  .chat-top b{font-size:15px}
-  .chat-messages{min-height:55vh;max-height:calc(100vh - 230px);padding:16px 10px;gap:10px}
-  .chat-message{max-width:84%}
-  .chat-bubble{font-size:14px;padding:10px 13px}
-  .message-form{padding:10px}
-  .message-form input{height:46px;font-size:14px}
-  .message-form button{height:46px;min-width:66px}
-  .chat-product{padding:10px 13px}
-  .chat-product img{width:50px;height:50px}
+.message-status.read {
+  color: #7fffd4;
+  letter-spacing: -3px;
 }
