@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AjeMarket Payment Management</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{--bg:#07111c;--panel:#0d1b2a;--panel2:#102235;--line:#20354a;--text:#f5f8fb;--muted:#9db0c2;--green:#22d3a2;--blue:#55a7ff;--orange:#ffb454;--red:#ff6574;--purple:#a78bfa}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top right,rgba(34,211,162,.09),transparent 32%),radial-gradient(circle at top left,rgba(85,167,255,.08),transparent 28%),var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+button,a,input,select{font:inherit}a{color:inherit;text-decoration:none}.topbar{position:sticky;top:0;z-index:50;background:rgba(7,17,28,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.topbar-inner{width:min(1200px,calc(100% - 28px));margin:auto;min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{font-size:24px;font-weight:900}.brand span{color:var(--green)}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:10px;padding:10px 13px;cursor:pointer;font-weight:800}.btn.primary{background:var(--green);color:#052119;border-color:var(--green)}
+main{width:min(1200px,calc(100% - 28px));margin:auto;padding:28px 0 60px}.hero{background:linear-gradient(135deg,rgba(34,211,162,.12),rgba(85,167,255,.07)),var(--panel);border:1px solid var(--line);border-radius:22px;padding:25px;margin-bottom:20px}
+.hero small{color:var(--green);font-weight:900;letter-spacing:1px}.hero h1{margin:7px 0 8px;font-size:clamp(30px,5vw,44px)}.hero p{margin:0;color:var(--muted);line-height:1.6}
+.error{display:none;padding:14px 16px;margin-bottom:18px;border-radius:12px;border:1px solid rgba(255,101,116,.3);background:rgba(255,101,116,.08);color:#ffb4bc;line-height:1.5}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}.label{color:var(--muted);font-size:13px;font-weight:700}.value{font-size:27px;font-weight:900;margin-top:6px}.green{color:var(--green)}.blue{color:var(--blue)}.orange{color:var(--orange)}.red{color:var(--red)}.purple{color:var(--purple)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}.panel-head{padding:17px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}.panel-head strong{font-size:18px}.panel-head span{color:var(--muted);font-size:12px}
+.filters{padding:14px 16px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 180px 180px;gap:10px}input,select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);outline:none}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:900px}th,td{padding:13px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}td{font-size:13px}tr:last-child td{border-bottom:0}
+.muted{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45}.badge{display:inline-flex;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900;white-space:nowrap}.success{background:rgba(34,211,162,.12);color:var(--green)}.pending{background:rgba(255,180,84,.12);color:var(--orange)}.failed{background:rgba(255,101,116,.12);color:var(--red)}.other{background:#17283a;color:#bcd0e2}.loading,.empty{padding:30px;text-align:center;color:var(--muted)}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.filters{grid-template-columns:1fr}}@media(max-width:600px){.topbar-inner{min-height:62px}.brand{font-size:20px}main{width:min(100% - 18px,520px);padding-top:18px}.hero{padding:20px;border-radius:18px}.hero h1{font-size:32px}.cards{gap:10px}.card{padding:14px;border-radius:15px}.value{font-size:22px}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+<a class="brand" href="admin.html">Aje<span>Market</span></a>
+<div class="actions"><a class="btn" href="admin.html">Admin Dashboard</a><button id="refreshBtn" class="btn primary" type="button">Refresh</button></div>
+</div></header>
+<main>
+<section class="hero"><small>AJEMARKET CONTROL CENTRE</small><h1>Payment Management</h1><p>Review AjeMarket Boost and Premium promotion transactions directly from Supabase.</p></section>
+<div id="errorBox" class="error"></div>
+<section id="summaryCards" class="cards"></section>
+<section class="panel">
+<div class="panel-head"><strong>Payment History</strong><span id="paymentCount">Loading...</span></div>
+<div class="filters">
+<input id="searchInput" type="search" placeholder="Search reference, seller, product...">
+<select id="statusFilter"><option value="all">All statuses</option><option value="successful">Successful</option><option value="pending">Pending</option><option value="failed">Failed</option></select>
+<select id="typeFilter"><option value="all">All promotions</option><option value="boost">Boost</option><option value="premium">Premium</option></select>
+</div>
+<div id="paymentsRoot"><div class="loading">Loading payments...</div></div>
+</section>
+</main>
+<script type="module" src="admin-payments.js"></script>
+</body>
+</html>
