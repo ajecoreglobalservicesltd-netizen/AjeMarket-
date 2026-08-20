@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AjeMarket — Payment Management</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div>
+      <strong>AjeMarket</strong>
+      <span>Owner Control Centre</span>
+    </div>
+
+    <nav>
+      <a href="admin.html">Admin Dashboard</a>
+      <button id="refreshBtn" class="btn">Refresh</button>
+      <button id="logoutBtn" class="btn secondary">Logout</button>
+    </nav>
+  </header>
+
+
+  <main class="admin-container">
+
+    <section class="admin-hero">
+      <p class="eyebrow">AJEMARKET CONTROL CENTRE</p>
+
+      <h1>Payment Management</h1>
+
+      <p class="muted">
+        Review AjeMarket Boost and Premium promotion transactions.
+        Successful revenue is based only on payments confirmed by Paystack.
+      </p>
+
+      <div id="status" class="admin-status">
+        Loading payment records...
+      </div>
+    </section>
+
+
+    <!-- SUMMARY -->
+
+    <section class="stats-grid">
+
+      <div class="stat-card">
+        <span>Total Transactions</span>
+        <strong id="totalTransactions">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Successful</span>
+        <strong id="successfulPayments">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Pending</span>
+        <strong id="pendingPayments">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Failed / Abandoned</span>
+        <strong id="failedPayments">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Successful Revenue</span>
+        <strong id="successfulRevenue">₦0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Boost Revenue</span>
+        <strong id="boostRevenue">₦0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Premium Revenue</span>
+        <strong id="premiumRevenue">₦0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Last 30 Days</span>
+        <strong id="last30Revenue">₦0</strong>
+      </div>
+
+    </section>
+
+
+    <!-- FILTERS -->
+
+    <section class="admin-panel">
+
+      <div class="panel-heading">
+        <div>
+          <h2>Payment History</h2>
+          <p class="muted">
+            Search and filter every promotion transaction.
+          </p>
+        </div>
+
+        <span id="shownCount" class="muted">
+          0 shown
+        </span>
+      </div>
+
+
+      <div class="payment-filters">
+
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Search reference, seller, product..."
+        >
+
+        <select id="statusFilter">
+          <option value="all">All statuses</option>
+          <option value="successful">Successful</option>
+          <option value="pending">Pending</option>
+          <option value="failed">Failed</option>
+          <option value="abandoned">Abandoned</option>
+        </select>
+
+        <select id="promotionFilter">
+          <option value="all">All promotions</option>
+          <option value="boost">Boost</option>
+          <option value="premium">Premium</option>
+        </select>
+
+      </div>
+
+
+      <div class="table-wrap">
+
+        <table class="payment-table">
+
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Promotion</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Product</th>
+              <th>Seller</th>
+              <th>Reference</th>
+              <th>Expires</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody id="paymentRows">
+            <tr>
+              <td colspan="9">
+                Loading...
+              </td>
+            </tr>
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- PAYMENT DETAILS MODAL -->
+
+  <div id="paymentModal" class="modal hidden">
+
+    <div class="modal-card">
+
+      <button
+        id="closeModal"
+        class="modal-close"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+      <h2>Payment Details</h2>
+
+      <div id="paymentDetails"></div>
+
+    </div>
+
+  </div>
+
+
+  <script type="module" src="payment-management.js"></script>
+
+</body>
+          </html>
