@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AjeMarket — User Management</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div>
+      <a href="index.html" class="brand">AjeMarket</a>
+      <span class="admin-label">Owner Control Centre</span>
+    </div>
+
+    <nav>
+      <a href="admin.html">Dashboard</a>
+      <a href="users.html" class="active">Users</a>
+      <a href="payments.html">Payments</a>
+      <button id="refreshBtn" class="btn small">Refresh</button>
+      <button id="logoutBtn" class="btn small danger">Logout</button>
+    </nav>
+  </header>
+
+  <main class="admin-page">
+
+    <section class="admin-hero">
+      <p class="eyebrow">AJEMARKET CONTROL CENTRE</p>
+
+      <h1>User Management</h1>
+
+      <p class="muted">
+        Manage and monitor registered AjeMarket accounts,
+        sellers and marketplace activity.
+      </p>
+
+      <div id="systemStatus" class="status-message">
+        Connecting to admin system...
+      </div>
+    </section>
+
+
+    <!-- SUMMARY -->
+
+    <section class="stats-grid">
+
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div>
+          <span>Total Users</span>
+          <strong id="totalUsers">—</strong>
+          <small>Registered accounts</small>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🏪</div>
+        <div>
+          <span>Sellers</span>
+          <strong id="sellerUsers">—</strong>
+          <small>Users with listings</small>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div>
+          <span>Verified</span>
+          <strong id="verifiedUsers">—</strong>
+          <small>Verified profiles</small>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🆕</div>
+        <div>
+          <span>New Users</span>
+          <strong id="newUsers7">—</strong>
+          <small>Last 7 days</small>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div>
+          <span>New Users</span>
+          <strong id="newUsers30">—</strong>
+          <small>Last 30 days</small>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- SEARCH -->
+
+    <section class="admin-section">
+
+      <div class="section-heading">
+
+        <div>
+          <h2>All Users</h2>
+          <p class="muted">
+            Search and inspect registered AjeMarket accounts.
+          </p>
+        </div>
+
+        <span id="userCount" class="count-badge">0 shown</span>
+
+      </div>
+
+
+      <div class="search-row">
+
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Search name, phone or user ID..."
+          autocomplete="off"
+        >
+
+        <select id="sellerFilter">
+          <option value="all">All users</option>
+          <option value="seller">Sellers only</option>
+          <option value="buyer">Non-sellers</option>
+        </select>
+
+        <select id="verifiedFilter">
+          <option value="all">All verification</option>
+          <option value="verified">Verified</option>
+          <option value="unverified">Unverified</option>
+        </select>
+
+      </div>
+
+
+      <div id="loading" class="loading">
+        Loading users...
+      </div>
+
+      <div id="errorBox" class="error-box" hidden></div>
+
+      <div id="usersList" class="users-list"></div>
+
+    </section>
+
+  </main>
+
+
+  <!-- USER DETAILS MODAL -->
+
+  <div id="userModal" class="modal" hidden>
+
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+
+    <div class="modal-card">
+
+      <button
+        id="closeModal"
+        class="modal-close"
+        type="button"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+      <div id="modalContent"></div>
+
+    </div>
+
+  </div>
+
+
+  <script type="module" src="users.js"></script>
+
+</body>
+        </html>
