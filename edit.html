@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Edit Listing — AjeMarket</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .edit-gallery{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin-top:12px;
+    }
+    .edit-photo{
+      position:relative;
+      border:1px solid #dfe5ec;
+      border-radius:14px;
+      overflow:hidden;
+      background:#f6f8fb;
+    }
+    .edit-photo img{
+      width:100%;
+      height:180px;
+      object-fit:cover;
+      display:block;
+    }
+    .edit-photo .remove-photo{
+      position:absolute;
+      top:8px;
+      right:8px;
+      background:#dc2626;
+      color:#fff;
+      border:0;
+      border-radius:999px;
+      padding:8px 11px;
+      font-weight:800;
+    }
+    .edit-photo .cover-label{
+      padding:8px 10px;
+      font-size:12px;
+      font-weight:800;
+      color:#087f7a;
+    }
+    .edit-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+    .edit-actions .btn{
+      flex:1;
+      min-width:150px;
+      text-align:center;
+    }
+    .edit-status{
+      margin-top:14px;
+      padding:12px;
+      border-radius:12px;
+      display:none;
+      font-weight:700;
+    }
+    .edit-status.show{display:block}
+    .edit-status.ok{background:#eafaf5;color:#116c50}
+    .edit-status.err{background:#ffecec;color:#a40000}
+    .sold-notice{
+      background:#fff4df;
+      color:#785100;
+      padding:13px;
+      border-radius:12px;
+      margin-bottom:16px;
+      font-weight:700;
+    }
+    @media(max-width:600px){
+      .edit-gallery{grid-template-columns:1fr 1fr}
+      .edit-photo img{height:145px}
+      .edit-actions{flex-direction:column}
+      .edit-actions .btn{width:100%}
+    }
+  </style>
+</head>
+<body>
+  <div class="warning">
+    ⚠️ AjeMarket is not an escrow/payment service. Inspect products physically before paying sellers.
+  </div>
+
+  <header>
+    <a class="logo" href="index.html">Aje<span>Market</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="sell.html">Sell</a>
+      <a href="messages.html">Messages</a>
+      <a href="account.html">Account</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="panel">
+      <small>SELLER CENTRE</small>
+      <h1>Edit listing</h1>
+
+      <div id="editRoot">
+        <div class="empty">Loading your listing…</div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="edit.js"></script>
+</body>
+</html>
