@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Seller Verification — AjeMarket</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.verify-wrap{width:min(760px,calc(100% - 24px));margin:28px auto 60px}.verify-card{padding:24px;border:1px solid var(--border);border-radius:24px;background:linear-gradient(145deg,rgba(12,31,48,.98),rgba(7,21,34,.98));box-shadow:var(--shadow)}
+.verify-card h1{margin-top:0}.verify-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.verify-grid .full{grid-column:1/-1}.verify-grid label{display:grid;gap:7px;font-weight:800}.verify-grid input,.verify-grid select,.verify-grid textarea{width:100%;padding:13px;border:1px solid var(--border);border-radius:12px;background:#091a2a;color:#fff}.verify-grid textarea{min-height:110px}.verify-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.trust-status{padding:16px;border-radius:16px;margin-bottom:20px;border:1px solid var(--border);background:rgba(255,255,255,.025)}.trust-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;background:rgba(34,211,162,.12);color:#5ee7c0;font-weight:900}.pending-badge{background:rgba(255,180,84,.12);color:#ffbd55}.rejected-badge{background:rgba(255,101,116,.12);color:#ff9aa4}.doc-help{color:var(--muted);font-size:12px;line-height:1.5}.status{margin-top:14px;padding:12px 14px;border-radius:12px;display:none}.status.show{display:block}.status.ok{background:rgba(34,211,162,.09);color:#79edd0}.status.err{background:rgba(255,101,116,.09);color:#ffb4bc}@media(max-width:650px){.verify-grid{grid-template-columns:1fr}.verify-grid .full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="warning">⚠️ Seller verification helps buyers identify trusted sellers. It does not guarantee the quality of any product.</div>
+<header>
+<a class="logo" href="index.html">Aje<span>Market</span></a>
+<nav><a href="index.html">Home</a><a href="dashboard.html">Dashboard</a><a href="account.html">Account</a></nav>
+</header>
+<main class="verify-wrap">
+<section class="verify-card">
+<small>AJEMARKET TRUST CENTRE</small>
+<h1>Seller Verification</h1>
+<p class="muted">Submit your details for manual review. Approved sellers receive the Trusted Seller badge.</p>
+<div id="statusCard" class="trust-status">Loading verification status…</div>
+<form id="verifyForm" class="verify-grid">
+<label>Seller type<select id="sellerType"><option value="individual">Individual seller</option><option value="business">Business seller</option></select></label>
+<label>Full name<input id="fullName" required autocomplete="name"></label>
+<label>Phone / WhatsApp<input id="phone" required autocomplete="tel"></label>
+<label>Business name <span class="muted">optional for individual</span><input id="businessName"></label>
+<label>Business registration number <span class="muted">optional</span><input id="businessRegistration"></label>
+<label>ID type<select id="idType" required><option value="">Select ID type</option><option>National ID / NIN</option><option>International Passport</option><option>Driver's Licence</option><option>Voter's Card</option><option>Business Registration</option></select></label>
+<label>ID number<input id="idNumber" required></label>
+<label class="full">Verification document<input id="document" type="file" accept="image/*,.pdf" required><span class="doc-help">Use a clear photo or PDF. Maximum 5 MB. The document is stored in a private verification bucket.</span></label>
+<label class="full">Note to admin <span class="muted">optional</span><textarea id="sellerNote" placeholder="Anything the verification team should know…"></textarea></label>
+<div class="full verify-actions"><button class="btn primary" id="submitBtn" type="submit">Submit for verification</button><a class="btn" href="account.html">Back to account</a></div>
+</form>
+<div id="formStatus" class="status"></div>
+</section>
+</main>
+<script type="module" src="seller-verification.js"></script>
+</body>
+</html>
