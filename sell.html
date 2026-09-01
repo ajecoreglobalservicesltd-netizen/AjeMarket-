@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sell — AjeMarket</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="sell.js?v=final-repair-20260901"></script>
+</head>
+<body>
+
+  <div class="warning">
+    ⚠️ Never ask buyers to pay before they physically see and verify the product.
+  </div>
+
+  <header>
+    <a class="logo" href="index.html">Aje<span>Market</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="sell.html">Sell</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="account.html">Account</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="panel">
+      <small>SELLER CENTRE</small>
+      <h1>List a product</h1>
+      <p class="muted">
+        Normal products are free to list. Cars, land, property and business/company
+        listings require a one-time listing payment before they become visible.
+        AjeMarket does not collect the buyer's purchase money.
+      </p>
+
+      <form id="form">
+        <label>
+          Title
+          <input
+            name="title"
+            required
+            maxlength="120"
+            placeholder="e.g. Toyota Camry 2018"
+          >
+        </label>
+
+        <label>
+          Category
+          <select name="category" id="category" required>
+            <option value="">Loading categories…</option>
+          </select>
+        </label>
+
+        <div id="feeNotice" class="notice free" style="margin:10px 0 16px;">
+          <b>FREE LISTING:</b> Normal products can be published immediately.
+        </div>
+
+        <label>
+          Price (₦)
+          <input name="price" type="number" min="0" required>
+        </label>
+
+        <label>
+          Location
+          <input name="location" required placeholder="Ikeja, Lagos">
+        </label>
+
+        <label>
+          Seller phone/WhatsApp
+          <input name="phone" required placeholder="08012345678">
+        </label>
+
+        <label>
+          Description
+          <textarea name="description" rows="6" required></textarea>
+        </label>
+
+        <label>
+          Photos
+          <input id="photos" type="file" accept="image/*" multiple required>
+        </label>
+
+        <div id="previews" class="thumbs"></div>
+
+        <button id="publishBtn" class="btn full" type="submit">
+          Publish listing
+        </button>
+
+        <div id="msg" class="status"></div>
+      </form>
+    </section>
+  </main>
+
+  <script type="module">
+    import { CATEGORY_NAMES } from "./categories.js";
+
+    const categorySelect = document.querySelector("#category");
+    const feeNotice = document.querySelector("#feeNotice");
+
+    categorySelect.innerHTML = `
+      <option value="" selected disabled>Select a category</option>
+      ${CATEGORY_NAMES.map(
+        category => `<option value="${category}">${category}</option>`
+      ).join("")}
+    `;
+
+    function feeForCategory(category) {
+      const c = String(category || "").toLowerCase().replace(/&/g, "and").trim();
+
+      if (c.includes("car") || c.includes("vehicle") || c.includes("automobile")) {
+        return { type: "vehicle", fee: 5000, label: "CAR / VEHICLE" };
+      }
+
+      if (c.includes("land")) {
+        return { type: "property", fee: 10000, label: "LAND" };
+      }
+
+      if (c.includes("house") || c.includes("apartment") || c.includes("flat") || c.includes("property")) {
+        if (c.includes("commercial")) {
+          return { type: "business", fee: 15000, label: "COMMERCIAL PROPERTY" };
+        }
+        return { type: "property", fee: 10000, label: "PROPERTY" };
+      }
+
+      if (c.includes("business") || c.includes("company")) {
+        return { type: "business", fee: 15000, label: "BUSINESS / COMPANY" };
+      }
+
+      return { type: "normal", fee: 0, label: "NORMAL PRODUCT" };
+    }
+
+    function updateFeeNotice() {
+      const rule = feeForCategory(categorySelect.value);
+
+      if (rule.fee === 0) {
+        feeNotice.className = "notice free";
+        feeNotice.innerHTML =
+          "<b>FREE LISTING:</b> This normal product can be published immediately.";
+      } else {
+        feeNotice.className = "notice paid";
+        feeNotice.innerHTML =
+          `<b>${rule.label}:</b> ₦${rule.fee.toLocaleString("en-NG")} listing fee. ` +
+          "You will be taken to Paystack after your listing details and photos are uploaded.";
+      }
+    }
+
+    categorySelect.addEventListener("change", updateFeeNotice);
+  </script>
+
+</body>
+</html>
