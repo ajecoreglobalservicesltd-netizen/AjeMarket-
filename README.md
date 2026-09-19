@@ -1,37 +1,22 @@
-# AjeMarket — FINAL MVP
+# AjeMarket Android App
 
-This is the complete mobile-first marketplace foundation.
+AjeMarket Android wrapper for the live website:
 
-## Business philosophy
-AjeMarket is NOT an escrow, wallet or payment-holding service. Buyers find sellers, contact them, physically inspect/verify products and pay sellers directly.
+https://ajemarket.ng/
 
-## One-time deployment
-1. Run `setup.sql` in Supabase SQL Editor. This intentionally recreates the AjeMarket application tables so the schema is consistent.
-2. Upload all files in this folder to the ROOT of your GitHub repository.
-3. Keep `index.html` at repository root.
-4. GitHub Pages: Settings → Pages → Deploy from branch → main → / (root).
-5. Wait for deployment.
+## Current Android build target
+- compileSdk: 36
+- targetSdk: 36 (Android 16)
+- minSdk: 23
+- versionName: 1.1
 
-## Included
-- Marketplace home/search/category/sort
-- Product detail pages
-- Accounts and email/password authentication
-- Seller listing form
-- Product image upload to Supabase Storage
-- Seller dashboard
-- Favorites
-- Product reporting
-- Buyer/seller message data model
-- Seller profile/verification fields
-- Safety warning and safety/terms page
-- Supabase RLS policies
-- Mobile/PWA-ready layout
+The app uses Android WebView to load the live AjeMarket website.
 
-## Important
-The browser uses only the Supabase publishable key. NEVER add a Supabase service_role/secret key to GitHub.
 
-## Admin
-`profiles.is_admin` is included for future moderation. Do not make yourself admin from the public browser. Set admin status securely in Supabase when you are ready for the admin dashboard.
-
-## Current deliberate limitation
-The message UI is a safe foundation; full real-time chat UI and push notifications are the next production hardening step. The core marketplace, accounts, listings, image storage, favorites, reports and security schema are included now.
+## V2.1 review notes
+- Kept the existing applicationId so this build can be used as an update to the same AjeMarket app.
+- Kept the live website URL unchanged: https://ajemarket.ng/
+- Android target remains API 36 / Android 16.
+- Added an explicit AndroidX Activity dependency used by the back-navigation code.
+- No AjeMarket website files or Supabase configuration are included or changed by this Android project.
+- GitHub Actions builds the debug APK as a separate Android artifact.
